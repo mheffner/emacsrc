@@ -1,5 +1,5 @@
 
-(add-to-list 'load-path "/home/mheffner/emacs/lisp")
+(add-to-list 'load-path "~/work/git_repo/xemacs/lisp")
 
 ;; key/mouse bindings
 
@@ -66,18 +66,14 @@
 ;;
 (global-set-key [(meta q)] 'fill-paragraph)
 
-;; SML mode
-;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/sml-mode")
-;; (load "sml-mode-startup")
-
 ;; xcscope
 (require 'xcscope)
 
 ;; function menu
 (require 'func-menu)
 
-(add-to-list 'load-path "/usr/share/emacs/site-lisp")
-(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/psgml")
+;; (add-to-list 'load-path "/usr/share/emacs/site-lisp")
+;; (add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/psgml")
 
 (require 'psgml)
 (setq auto-mode-alist (cons '("\\.docbook$" . sgml-mode) auto-mode-alist))
@@ -93,8 +89,6 @@
 
 ;; whitespace checker
 (require 'whitespace)
-
-(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/docbookide")
 
 ;; DocBook IDE mode
 (autoload 'docbook-mode "docbookide" "Major mode for DocBook documents." t)
@@ -187,7 +181,7 @@
 
 ;; yatex
 
-; (add-to-list 'load-path "~/emacs/lisp/yatex1.72.zu")
+; (add-to-list 'load-path "~/work/git_repo/xemacs/lisp/yatex1.72.zu")
 ; (require 'yatex)
 
 ; (add-hook 'yatex-mode-hook
@@ -216,7 +210,7 @@
 (autoload 'thrift-mode "thrift" "Thrift editing mode." t)
 
 ;; sgml
-(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/sgml")
+;; (add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/sgml")
 
 (setq auto-mode-alist (cons '("\\.sgml$" . sgml-mode) auto-mode-alist))
 (setq interpreter-mode-alist (cons '("sgml" . sgml-mode)
@@ -227,7 +221,7 @@
 ;; (require 'pycomplete)
 
 ;; auto-save?
-(setq auto-save-directory (expand-file-name "/usr/local/mike/emacs-save")
+(setq auto-save-directory (expand-file-name "~/work/git_repo/xemacs/autosave")
       auto-save-directory-fallback auto-save-directory
       auto-save-hash-p nil
       efs-auto-save t
