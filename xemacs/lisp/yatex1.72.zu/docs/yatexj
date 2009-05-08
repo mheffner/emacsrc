@@ -320,7 +320,10 @@ shell $B$KEO$9$N$G<!$N$h$&$K=q$1$P!"(Bghostview $B$J$I$r%W%l%t%e!<%"$K;H$&;~$
              %#!platex main ; dvi2ps main.dvi > main
 
 $B$J$*!"$3$N9T$N:G8e$NC18l$N%T%j%*%I0JA0$r!V%a%$%s%U%!%$%k!W$N%Y!<%9%M!<%`$G(B
-$B$"$k$H2>Dj$7$^$9(B($B>e$N(B2$B$D$N>l9g$I$A$i$b(B`main')$B!#(B
+$B$"$k$H2>Dj$7$^$9(B($B>e$N(B2$B$D$N>l9g$I$A$i$b(B`main')$B!#$3$N9T$K5-=R$7$?!"(B`%f'$B$O%a(B
+$B%$%s%U%!%$%kL>$K!"(B`%r' $B$O%a%$%s%U%!%$%k$N3HD%;R$r<h$j=|$$$?ItJ,$KCV49$5$l(B
+$B$^$9!#$?$@$7!"(B`%f,%r'$B$rMxMQ$7$?>l9g!"=i2s%?%$%W%;%C%H;~$KI,$:%a%$%s%U%!%$(B
+$B%kL>$NF~NO$rB%$5$l$^$9!#(B
 
   `[prefix] g' (*Note Cursor jump::$B;2>H(B) $B$G$N%U%!%$%k4V%8%c%s%W$rM-8z$K5!(B
 $BG=$5$;$k$?$a!"F~NO%U%!%$%kJ,3d;~$K$O<!$N$3$H$KCm0U$7$F2<$5$$!#(B
@@ -1998,53 +2001,53 @@ Node: Print out10854
 Node: %#notation11299
 Node: Changing typesetter11866
 Node: Splitting input files12255
-Node: Fix region for typesetting13871
-Node: lpr format15616
-Node: Editing %# notation17016
-Node: Completion17768
-Node: begin$B7?Jd40(B18412
-Node: section$B7?Jd40(B22542
-Node: 2$B8D0J>e$N0z?t$r$H$k(B section$B7?%3%^%s%I(B24328
-Node: Enclose section-type command25826
-Node: Recursive completion26226
-Node: view-sectioning26778
-Node: label-generation29239
-Node: large$B7?Jd40(B29984
-Node: maketitle$B7?Jd40(B31111
-Node: Arbitrary completion31593
-Node: end$BJd40(B32199
-Node: Accent mark completion32836
-Node: Image completion33567
-Node: Greek letter completion37101
-Node: Local dictionary38096
-Node: Commenting out39336
-Node: Cursor jump41568
-Node: $BBP1~%*%V%8%'%/%H$X$N%8%c%s%W(B41942
-Node: $B$*3(IA$-%D!<%k5/F0(B43839
-Node: $B%a%$%s%U%!%$%k$X$N%8%c%s%W(B45804
-Node: $B4D6-$rC10L$H$7$?%8%c%s%W(B46473
-Node: $B:G8e$NJd400LCV$X$N%8%c%s%W(B47137
-Node: Modifying/Deleting47615
-Node: Changing LaTeX command48269
-Node: Killing LaTeX command49285
-Node: Filling50718
-Node: Includeonly53187
-Node: What column54276
-Node: Intelligent newline55625
-Node: Usepackage cheker57560
-Node: Changing mode of YaTeX58341
-Node: Online help59488
-Node: Inclusion hierarchy browser61631
-Node: Cooperation with other packages64086
-Node: Customizations64844
-Node: Lisp variables65330
-Node: All customizable variables66364
-Node: Sample definitions77391
-Node: Hook variables77970
-Node: Hook file79330
-Node: Add-in functions79665
-Node: Etc80083
-Node: Copying80724
-Node: Concept Index82169
+Node: Fix region for typesetting14160
+Node: lpr format15905
+Node: Editing %# notation17305
+Node: Completion18057
+Node: begin$B7?Jd40(B18701
+Node: section$B7?Jd40(B22831
+Node: 2$B8D0J>e$N0z?t$r$H$k(B section$B7?%3%^%s%I(B24617
+Node: Enclose section-type command26115
+Node: Recursive completion26515
+Node: view-sectioning27067
+Node: label-generation29528
+Node: large$B7?Jd40(B30273
+Node: maketitle$B7?Jd40(B31400
+Node: Arbitrary completion31882
+Node: end$BJd40(B32488
+Node: Accent mark completion33125
+Node: Image completion33856
+Node: Greek letter completion37390
+Node: Local dictionary38385
+Node: Commenting out39625
+Node: Cursor jump41857
+Node: $BBP1~%*%V%8%'%/%H$X$N%8%c%s%W(B42231
+Node: $B$*3(IA$-%D!<%k5/F0(B44128
+Node: $B%a%$%s%U%!%$%k$X$N%8%c%s%W(B46093
+Node: $B4D6-$rC10L$H$7$?%8%c%s%W(B46762
+Node: $B:G8e$NJd400LCV$X$N%8%c%s%W(B47426
+Node: Modifying/Deleting47904
+Node: Changing LaTeX command48558
+Node: Killing LaTeX command49574
+Node: Filling51007
+Node: Includeonly53476
+Node: What column54565
+Node: Intelligent newline55914
+Node: Usepackage cheker57849
+Node: Changing mode of YaTeX58630
+Node: Online help59777
+Node: Inclusion hierarchy browser61920
+Node: Cooperation with other packages64375
+Node: Customizations65133
+Node: Lisp variables65619
+Node: All customizable variables66653
+Node: Sample definitions77680
+Node: Hook variables78259
+Node: Hook file79619
+Node: Add-in functions79954
+Node: Etc80372
+Node: Copying81013
+Node: Concept Index82458
 
 End tag table

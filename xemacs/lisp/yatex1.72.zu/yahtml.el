@@ -1,6 +1,6 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; (c) 1994-2004 by HIROSE Yuuji [yuuji@yatex.org]
-;;; Last modified Wed Feb 11 15:33:47 2004 on firestorm
+;;; Last modified Mon Aug 22 23:55:29 2005 on firestorm
 ;;; $Id: yahtml.el,v 1.72 2003/12/25 04:10:54 yuuji Rel yuuji $
 
 (defconst yahtml-revision-number "1.72"
@@ -600,7 +600,7 @@ T for static indentation depth")
      (YaTeX-struct-begin . "<%1%2")
      (YaTeX-struct-end . "</%1>")
      (YaTeX-struct-name-regexp . yahtml-closable-regexp)
-     (YaTeX-comment-prefix . "<!--")
+     (YaTeX-comment-prefix . "<!--[^#]")
      (YaTeX-coding-system . yahtml-kanji-code) ;necessary?
      (YaTeX-typesetting-mode-map . yahtml-lint-buffer-map)
      (fill-prefix . yahtml-fill-prefix) (fill-column . yahtml-fill-column)
@@ -855,6 +855,16 @@ T for static indentation depth")
 	 (save-excursion (insert (format "</%s>" form))))
      (if (search-backward "\"\"" p t) (forward-char 1))))
 
+(defun yahtml-read-css (alist)
+  (let ((completion-ignore-case t) (delim " ")
+	(minibuffer-completion-table alist))
+    (read-from-minibuffer
+     (substitute-command-keys
+      (if YaTeX-japan
+	  "ÉNÉâÉX(ï°êîéwíËÇÕ\\[quoted-insert] SPCÇ≈ãÊêÿÇÈ): "
+	"class(or class list delimited by \\[quoted-insert] SPC): "))
+     nil YaTeX-minibuffer-completion-map nil)))
+  
 ;;; ---------- Add-in ----------
 (defun yahtml-addin (form)
   "Check add-in function's existence and call it if exists."
@@ -864,9 +874,7 @@ T for static indentation depth")
 	   (not (equal last-command-char ?\C-j))
 	   (memq yahtml-current-completion-type '(multiline inline))
 	   (yahtml-make-optional-argument ;should be made generic?
-	    "class"
-	    (let ((completion-ignore-case t))
-	      (completing-read "class: " a))))
+	    "class" (yahtml-read-css a)))
       (if (and (intern-soft addin) (fboundp (intern-soft addin))
 	       (stringp (setq s (funcall (intern addin))))
 	       (string< "" s))
@@ -1092,7 +1100,8 @@ Not used yet.")
 	 v)
     (cond
      ((eq alist 'file)
-      (read-file-name prompt "" default nil ""))
+      (let ((insert-default-directory))
+	(read-file-name prompt "" default nil "")))
      ((and alist (symbolp alist))
       (completing-read prompt (symbol-value alist) nil nil default))
      (alist
@@ -1946,8 +1955,8 @@ This function should be able to treat white spaces in value, but not yet."
        ((setq attr (yahtml-on-assignment-p)) ;if on the assignment to attr
 	(if (and (equal attr "class")	     ;treat "class" attribute specially
 		 (setq css (yahtml-css-get-element-completion-alist tag)))
-	    (setq new (yahtml-read-parameter ;should be made generic?
-		       attr nil (list (cons "class" css))))
+	    
+	    (setq new (yahtml-read-css css))
 	  ;;other than "class", read parameter normally
 	  (setq new (yahtml-read-parameter attr)))
 	(goto-char (car (get 'yahtml-on-assignment-p 'region)))
@@ -2592,23 +2601,32 @@ If no matches found in yahtml-path-url-alist, return raw file name."
       (goto-char (point-min))
       (let ((alist initial) b e element class a)
 	(setq b (point))
-	(while (search-forward "{" nil t)
-	  (setq e (point))
-	  (goto-char b)
-	  (while (re-search-forward	;ÇøÇÂÇ∆Ç¢Ç¢â¡å∏Ç»REGEXP
-		  "\\([a-z][-a-z0-9]*\\)?\\.\\([-a-z0-9][-a-z0-9]*\\)\\>" e t)
-	    (setq element (YaTeX-match-string 1)
-		  class (YaTeX-match-string 2))
-	    ;;if starts with period (match-string 1 is nil),
-	    ;;this is global class
-	    (setq element (downcase (or element "global")))
-	    (if (setq a (assoc element alist))
-		(or (assoc class (cdr a))
-		    (setcdr a (cons (list class) (cdr a))))
-	      (setq alist (cons (list element (list class)) alist))))
-	  (goto-char (1- e))
-	  (search-forward "}" nil t)
-	  (setq b (point)))
+	(while (re-search-forward "\\({\\)\\|\\(@import\\)" nil t)
+	  (if (match-beginning 2)
+	      (let ((f (YaTeX-buffer-substring
+			(progn (skip-chars-forward "^\"")(1+ (point)))
+			(progn (forward-char 1)
+			       (skip-chars-forward "^\"")(point)))))
+		(if (file-exists-p f)
+		    (setq alist
+			  (append alist (yahtml-css-collect-classes-file f)))))
+	    (setq e (point))
+	    (goto-char b)
+	    (while (re-search-forward	;ÇøÇÂÇ∆Ç¢Ç¢â¡å∏Ç»REGEXP
+		    "\\([a-z][-a-z0-9]*\\)?\\.\\([-a-z0-9][-a-z0-9]*\\)\\>"
+		    e t)
+	      (setq element (YaTeX-match-string 1)
+		    class (YaTeX-match-string 2))
+	      ;;if starts with period (match-string 1 is nil),
+	      ;;this is global class
+	      (setq element (downcase (or element "global")))
+	      (if (setq a (assoc element alist))
+		  (or (assoc class (cdr a))
+		      (setcdr a (cons (list class) (cdr a))))
+		(setq alist (cons (list element (list class)) alist))))
+	    (goto-char (1- e))
+	    (search-forward "}" nil t)
+	    (setq b (point))))
 	alist))))
 	    
 (defun yahtml-css-collect-classes-buffer (&optional initial)

@@ -2,7 +2,7 @@
 ;;; YaTeX math-mode-specific functions.
 ;;; yatexmth.el
 ;;; (c)1993-2003 by HIROSE Yuuji [yuuji@yatex.org]
-;;; Last modified Sun Jul  4 01:35:23 2004 on firestorm
+;;; Last modified Sat Oct  8 17:34:40 2005 on firestorm
 ;;; $Id: yatexmth.el,v 1.71 2003/05/01 13:38:49 yuuji Rel yuuji $
 
 ;;; [Customization guide]
@@ -277,6 +277,8 @@
    ("O+"	"bigoplus"	"/~~~\\\n| + |\n\\___/")
    ("Ox"	"bigotimes"	"/~~~\\\n| X |\n\\___/")
    ;;other marks
+   ("angle"	"angle"		("/\n~" "Å⁄"))
+   ("/_"	"angle"		("/\n~" "Å⁄"))
    ("Z"		"aleph"		"|\\|")
    ("|\\|"	"aleph"		"|\\|")
    ("h-"	"hbar"		"_\nh")

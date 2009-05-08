@@ -1,8 +1,8 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; YaTeX process handler.
 ;;; yatexprc.el
-;;; (c)1993-2003 by HIROSE Yuuji.[yuuji@yatex.org]
-;;; Last modified Wed Oct 13 01:53:08 2004 on firestorm
+;;; (c)1993-2005 by HIROSE Yuuji.[yuuji@yatex.org]
+;;; Last modified Tue Jan 24 11:30:34 2006 on firestorm
 ;;; $Id: yatexprc.el,v 1.72 2003/12/25 04:10:54 yuuji Rel yuuji $
 
 ;(require 'yatex)
@@ -436,6 +436,7 @@ PROC should be process identifier."
 		    0 (rindex YaTeX-texput-file ?.))
        (YaTeX-get-preview-file-name))
      'YaTeX-preview-file-history)))
+  (if YaTeX-dos (setq preview-file (expand-file-name preview-file)))
   (setq dvi2-command preview-command)	;`dvi2command' is buffer local
   (save-excursion
     (YaTeX-visit-main t)
@@ -512,7 +513,7 @@ by region."
 error or warning lines in reverse order."
   (interactive)
   (let ((cur-buf (buffer-name)) (cur-win (selected-window))
-	error-line typeset-win error-buffer error-win)
+	b0 errorp error-line typeset-win error-buffer error-win)
     (if (null (get-buffer YaTeX-typeset-buffer))
 	(error "There is no typesetting buffer."))
     (YaTeX-showup-buffer YaTeX-typeset-buffer nil t)
@@ -521,10 +522,10 @@ error or warning lines in reverse order."
 	 (concat "\\(" latex-error-regexp "\\)\\|\\("
 		 latex-warning-regexp "\\)")
 	 nil t)
-	nil
+	(setq errorp (match-beginning 1))
       (select-window cur-win)
       (error "No more errors on %s" cur-buf))
-    (goto-char (match-beginning 0))
+    (goto-char (setq b0 (match-beginning 0)))
     (skip-chars-forward "^0-9" (match-end 0))
     (setq error-line
 	  (string-to-int
@@ -546,13 +547,13 @@ error or warning lines in reverse order."
     (setq error-win (selected-window))
     (goto-line error-line)
     (message "LaTeX %s in `%s' on line: %d."
-	     (if (match-beginning 1) "error" "warning")
+	     (if errorp "error" "warning")
 	     error-buffer error-line)
     (select-window typeset-win)
     (skip-chars-backward "0-9")
     (recenter (/ (window-height) 2))
     (sit-for 1)
-    (goto-char (match-beginning 0))
+    (goto-char b0)
     (select-window error-win)))
 
 (defun YaTeX-jump-error-line ()
@@ -690,21 +691,27 @@ is non-nil, then
 	\"jlatex main.tex\"
 
 will be given to the shell."
-  (let (magic command target)
+  (let (parent tparent magic)
     (setq parent
 	  (cond
-	   (YaTeX-parent-file YaTeX-parent-file)
+	   (YaTeX-parent-file
+	    (if YaTeX-dos (expand-file-name YaTeX-parent-file)
+	      YaTeX-parent-file))
 	   (t (save-excursion
 		(YaTeX-visit-main t)
 		(file-name-nondirectory (buffer-file-name)))))
-	  magic (YaTeX-get-builtin "!"))
-    (cond
-     (magic
-      (cond
-       (switch (if (string-match "\\s " magic) magic
-		 (concat magic " " parent)))
-       (t (concat (substring magic 0 (string-match "\\s " magic)) " "))))
-     (t (concat tex-command " " (if switch parent))))))
+	  magic (YaTeX-get-builtin "!")
+	  tparent (file-name-nondirectory parent))
+    (YaTeX-replace-formats
+     (cond
+      (magic
+       (cond
+	(switch (if (string-match "\\s " magic) magic
+		  (concat magic " " parent)))
+	(t (concat (substring magic 0 (string-match "\\s " magic)) " "))))
+      (t (concat tex-command " " (if switch parent))))
+     (list (cons "f" tparent)
+	   (cons "r" (substring tparent 0 (rindex tparent ?.)))))))
 
 (defvar YaTeX-lpr-command-history nil
   "Holds command line history of YaTeX-lpr.")

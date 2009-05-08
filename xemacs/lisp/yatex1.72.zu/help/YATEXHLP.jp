@@ -393,9 +393,14 @@ FILE.tex がそこにあるかのように処理を続ける。
 \setcounter{FOO}{VAL}
 カウンタFOOの値をVALに設定する。
 
+<refer 新しいカウンタの作り方>
+
 addtocounter
 \addtocounter{FOO}{VAL}
 カウンタFOOの値にVALを加える。
+
+<refer 新しいカウンタの作り方>
+
 
 newcounter
 \newcounter{COUNTER}[OLDCTR]
@@ -403,6 +408,18 @@ FILE.tex がそこにあるかのように処理を続ける。
 オプション引数[OLDCTR]を指定すると、既存のカウンタOLDCTRの値が
 \stepcounter もしくは \addtocounter で変更されるたびにCOUNTERの値もリセッ
 トされる。
+
+<refer 新しいカウンタの作り方>
+
+新しいカウンタの作り方
+以下の定義で \mondai とすると、自動的にnをインクリメントして「第n問」を
+出力する。
+
+\newcounter{toi}
+\renewcommand{\thetoi}{第\arabic{toi}問~ }
+\setcounter{toi}{0}
+\newcommand{\mondai}{\refstepcounter{toi}\thetoi}
+
 
 value
 \value{COUNTER}

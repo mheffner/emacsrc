@@ -241,7 +241,10 @@ description makes it convenient to use ghostview as dvi-previewer.
              %#!latex main ; dvi2ps main.dvi > main
 
 Note that YaTeX assumes the component before the last period of the last
-word in this line as base name of the main LaTeX source.
+word in this line as base name of the main LaTeX source.  The `%f'
+notation in this line is replaced by main file name, and `%r' replaced by
+root name of main file name.  If you specify `%f' or `%r', YaTeX always
+ask you the name of main file at the first typesetting.
 
   To make best use of the feature of inter-file jumping by `[prefix] g'
 (see *Note Cursor jump::), take described below into consideration.
@@ -2080,55 +2083,55 @@ Node: Printing out6766
 Node: %#notation7057
 Node: Changing typesetter7432
 Node: Splitting input files7795
-Node: Static region for typesetting9010
-Node: Lpr format10138
-Node: Editing %# notation11194
-Node: Completion11712
-Node: Begin-type completion12271
-Node: Section-type completion15314
-Node: view-sectioning17748
-Node: Large-type completion19327
-Node: Maketitle-type completion20057
-Node: Arbitrary completion20608
-Node: End completion20997
-Node: Accent completion21466
-Node: Image completion22082
-Node: Greek letters completion24338
-Node: Local dictionaries25064
-Node: Commenting out26000
-Node: Cursor jump27458
-Node: Jump to corresponding object27769
-Node: Invoking image processor29169
-Node: Jump to main file30511
-Node: Jumping around the environment30875
-Node: Jumping to last completion position31292
-Node: Changing and Deleting31800
-Node: Changing LaTeX commands32191
-Node: Killing LaTeX commands33367
-Node: Filling34551
-Node: Updation of includeonly36401
-Node: What column37197
-Node: Intelligent newline38281
-Node: Usepackage checker39941
-Node: Online help40531
-Node: Browsing file hierarchy42205
-Node: Cooperation with other packages43941
-Node: Customizations44645
-Node: Lisp variables44978
-Node: All customizable variables45981
-Node: Sample definitions55729
-Node: Hook variables56241
-Node: Hook file56944
-Node: Add-in functions57282
-Node: How the add-in function works58141
-Node: Defining option-add-in60339
-Node: Defining argument-add-in61060
-Node: Defining enclosing-add-in61941
-Node: How the function is called62794
-Node: Useful functions for creating add-in63469
-Node: Contribution64873
-Node: Add-in generator65146
-Node: Etcetera70539
-Node: Copying71143
+Node: Static region for typesetting9222
+Node: Lpr format10350
+Node: Editing %# notation11406
+Node: Completion11924
+Node: Begin-type completion12483
+Node: Section-type completion15526
+Node: view-sectioning17960
+Node: Large-type completion19539
+Node: Maketitle-type completion20269
+Node: Arbitrary completion20820
+Node: End completion21209
+Node: Accent completion21678
+Node: Image completion22294
+Node: Greek letters completion24550
+Node: Local dictionaries25276
+Node: Commenting out26212
+Node: Cursor jump27670
+Node: Jump to corresponding object27981
+Node: Invoking image processor29381
+Node: Jump to main file30723
+Node: Jumping around the environment31087
+Node: Jumping to last completion position31504
+Node: Changing and Deleting32012
+Node: Changing LaTeX commands32403
+Node: Killing LaTeX commands33579
+Node: Filling34763
+Node: Updation of includeonly36613
+Node: What column37409
+Node: Intelligent newline38493
+Node: Usepackage checker40153
+Node: Online help40743
+Node: Browsing file hierarchy42417
+Node: Cooperation with other packages44153
+Node: Customizations44857
+Node: Lisp variables45190
+Node: All customizable variables46193
+Node: Sample definitions55941
+Node: Hook variables56453
+Node: Hook file57156
+Node: Add-in functions57494
+Node: How the add-in function works58353
+Node: Defining option-add-in60551
+Node: Defining argument-add-in61272
+Node: Defining enclosing-add-in62153
+Node: How the function is called63006
+Node: Useful functions for creating add-in63681
+Node: Contribution65085
+Node: Add-in generator65358
+Node: Etcetera70751
+Node: Copying71355
 
 End tag table

@@ -26,6 +26,13 @@
 	変えるようにした(Emacs21.4なら上下にスライドできるだろう)。
 	変数 YaTeX-dvi2-command-ext-alist 新設。Previewerコマンドと、そ
 	れでPreviewするファイルのデフォルト拡張子を指定できるようにした。
+	tabular中のカラム内に\begin\endがある場合はfill-paragraph境界を
+	そこまでに絞るようにした。
+
+	=== yahtml ===
+	cssの @import に対応(たぶん)。
+	class補完でクラス名をSPCで区切った複数指定の補完入力を可能に。
+	Emacs-21.3 以降 insert-default-directory をnilに。
 
 1.72	=== yatex ===
 	YaTeX-kanji-code が nil なら coding-system に感知しない

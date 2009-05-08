@@ -162,16 +162,16 @@ clean:
 info: docs/yatexj docs/yatexe docs/yahtmlj docs/yahtmle
 
 docs/yatexj: docs/yatexj.tex
-	(cd docs; ${EMACS} -batch -l ./yatexlib.el -e tfb-and-exit yatexj.tex)
+	(cd docs; ${EMACS} -batch -l ../yatexlib.el -e tfb-and-exit yatexj.tex)
 
 docs/yatexe: docs/yatexe.tex
-	(cd docs; ${EMACS} -batch -l ./yatexlib.el -e tfb-and-exit yatexe.tex)
+	(cd docs; ${EMACS} -batch -l ../yatexlib.el -e tfb-and-exit yatexe.tex)
 
 docs/yahtmlj: docs/yahtmlj.tex
-	(cd docs; ${EMACS} -batch -l ./yatexlib.el -e tfb-and-exit yahtmlj.tex)
+	(cd docs;${EMACS} -batch -l ../yatexlib.el -e tfb-and-exit yahtmlj.tex)
 
 docs/yahtmle: docs/yahtmle.tex
-	(cd docs; ${EMACS} -batch -l ./yatexlib.el -e tfb-and-exit yahtmle.tex)
+	(cd docs;${EMACS} -batch -l ../yatexlib.el -e tfb-and-exit yahtmle.tex)
 
 package: info
 	@-mkdir ${PACKDIR}

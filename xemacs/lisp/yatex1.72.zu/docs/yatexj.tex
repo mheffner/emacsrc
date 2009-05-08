@@ -10,7 +10,7 @@
 @c ノードいじったら C-l C-u C-n 全部のノード更新 C-l C-u C-e
 @c メニュー増やしたら C-l C-u C-m 全部のメニュー更新 C-l C-u C-a
 @c フォーマットするときは C-l C-e C-b
-@c Last modified Sat Jan 31 23:42:36 2004 on firestorm
+@c Last modified Wed Jul 20 21:25:48 2005 on firestorm
 @syncodeindex vr cp
 @end iftex
 
@@ -371,6 +371,10 @@ shell に渡すので次のように書けば、ghostview などをプレヴューアに使う時に便
 
 なお、この行の最後の単語のピリオド以前を「メインファイル」のベース
 ネームであると仮定します(上の2つの場合どちらも@file{main})。
+この行に記述した、@code{%f}はメインファイル名に、
+@code{%r} はメインファイルの拡張子を取り除いた部分に置換されます。
+ただし、@code{%f,%r}を利用した場合、初回タイプセット時に必ずメインファイル
+名の入力を促されます。
 
   @kbd{[prefix] g} (@ref{Cursor jump}参照) での
 ファイル間ジャンプを有効に機能させるため、入力ファイル分割時には次のことに

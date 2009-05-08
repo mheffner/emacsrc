@@ -5,7 +5,7 @@
 
 @iftex
 @c @syncodeindex fn cp
-@c Last modified Sat Jan 31 23:43:08 2004 on firestorm
+@c Last modified Wed Jul 20 21:27:50 2005 on firestorm
 @syncodeindex vr cp
 @end iftex
 
@@ -272,6 +272,10 @@ description makes it convenient to use ghostview as dvi-previewer.
 @noindent
 Note that YaTeX  assumes the component  before the  last period of
 the last word in this line as base name of the main La@TeX{} source.
+The @code{%f} notation in this line is replaced by main file name, and
+@code{%r} replaced by root name of main file name.  If you specify
+@code{%f} or @code{%r}, YaTeX always ask you the name of main file at the
+first typesetting.
 
   To make best use of the feature of inter-file jumping by
 @kbd{[prefix] g} (see @ref{Cursor jump}), take described below into

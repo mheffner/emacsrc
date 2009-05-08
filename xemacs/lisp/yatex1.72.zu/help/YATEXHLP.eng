@@ -375,15 +375,29 @@ Process as if FILE.tex has been inserted at that point.
 \setcounter{FOO}{VAL}
 Set counter FOO's value to VAL.
 
+<refer How to Introduce new counter>
+
 addtocounter
 \addtocounter{FOO}{VAL}
 Add value VAL to counter FOO.
+
+<refer How to Introduce new counter>
 
 newcounter
 \newcounter{COUNTER}[OLDCTR]
 Defines a new counter COUNTER.
 If an optional argument OLDCTR is given, COUNTER's value will be reset
 every time OLDCTR's value is changed by \stepcounter or \addtocounter.
+
+<refer How to Introduce new counter>
+
+How to Introduce new counter
+You'll get `Question n.' increasing n with \mondai, by setting as below.
+
+\newcounter{toi}
+\renewcommand{\thetoi}{Question \arabic{toi}.~ }
+\setcounter{toi}{0}
+\newcommand{\mondai}{\refstepcounter{toi}\thetoi}
 
 value
 \value{COUNTER}

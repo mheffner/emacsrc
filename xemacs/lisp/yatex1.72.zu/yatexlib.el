@@ -1,8 +1,8 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; YaTeX and yahtml common libraries, general functions and definitions
 ;;; yatexlib.el
-;;; (c)1994-2004 by HIROSE Yuuji.[yuuji@yatex.org]
-;;; Last modified Mon Jul 12 13:52:09 2004 on firestorm
+;;; (c)1994-2005 by HIROSE Yuuji.[yuuji@yatex.org]
+;;; Last modified Tue Jan 24 12:08:44 2006 on duke
 ;;; $Id: yatexlib.el,v 1.72 2003/12/25 04:10:54 yuuji Rel yuuji $
 
 ;; General variables
@@ -31,6 +31,10 @@
 
 ;; autoload from yahtml.el
 (autoload 'yahtml-inner-environment-but "yahtml" "yahtml internal func." t)
+
+(defvar latex-message-kanji-code 2
+  "*Kanji coding system latex command types out.
+1 = Shift JIS, 2 = JIS, 3 = EUC.")
 
 (defvar YaTeX-kanji-code-alist
   (cond
@@ -79,6 +83,16 @@ This variable is effective when font-lock is used.
 \it, \bf ì‡ïîÇ≈ÇÃì˙ñ{åÍÇ™Å†Ç…Ç»Ç¡ÇƒÇµÇ‹Ç§èÍçáÇÕÇ±ÇÍÇnilÇ…ÇµÇƒâ∫Ç≥Ç¢ÅB")
 
 ;----------- work variables ----------------------------------------
+(defvar YaTeX-minibuffer-completion-map nil
+  "Minibuffer completion key map that allows comma completion.")
+(if YaTeX-minibuffer-completion-map nil
+  (setq YaTeX-minibuffer-completion-map
+	(copy-keymap minibuffer-local-completion-map))
+  (define-key YaTeX-minibuffer-completion-map " "
+    'YaTeX-minibuffer-complete)
+  (define-key YaTeX-minibuffer-completion-map "\t"
+    'YaTeX-minibuffer-complete))
+
 (defvar YaTeX-typesetting-mode-map nil
   "Keymap used in YaTeX typesetting buffer")
 
@@ -341,6 +355,13 @@ See also YaTeX-search-active-forward."
   (YaTeX-search-active-forward
    regexp cmntrx bound err cnt 're-search-backward))
 
+(defun YaTeX-relative-path-p (path)
+  "Return non-nil if PATH is not absolute one."
+  (let ((md (match-data)))
+    (unwind-protect
+	(not (string-match "^\\(/\\|[a-z]:\\|\\\\\\).*/" file))
+      (store-match-data md))))
+
 ;;;###autoload
 (defun YaTeX-switch-to-buffer (file &optional setbuf)
   "Switch to buffer if buffer exists, find file if not.
@@ -348,7 +369,7 @@ Optional second arg SETBUF t make use set-buffer instead of switch-to-buffer."
   (interactive "Fswitch to file: ")
   (if (bufferp file)
       (setq file (buffer-file-name file))
-    (and (string-match "^[^/].*/" file)
+    (and (YaTeX-relative-path-p file)
 	 (eq major-mode 'yatex-mode)
 	 YaTeX-search-file-from-top-directory
 	 (save-excursion
@@ -374,7 +395,7 @@ Optional second arg SETBUF t make use set-buffer instead of switch-to-buffer."
   (interactive "Fswitch to file: ")
   (and (eq major-mode 'yatex-mode)
        (stringp file)
-       (string-match "^[^/].*/" file)
+       (YaTeX-relative-path-p file)
        YaTeX-search-file-from-top-directory
        (save-excursion
 	 (YaTeX-visit-main t)
@@ -995,7 +1016,7 @@ to most recent sectioning command."
   (let ((curp (point)))
     (if (and (YaTeX-on-begin-end-p) (match-beginning 1)) ;if on \\begin
 	(progn (goto-char (match-end 0)))
-      (if (= (char-after) ?\\) nil	;if on \\end
+      (if (= (char-after (point)) ?\\) nil	;if on \\end
 	(skip-chars-backward "^\n\\\\")
 	(or (bolp) (forward-char -1))))
     (if (not (YaTeX-end-of-environment))   ;arg1 turns to match-beginning 1
@@ -1364,6 +1385,21 @@ compared by regexp."
 	     (featurep 'mule)
 	     (set-language-environment "Japanese"))
 	(mapcar 'byte-compile-file command-line-args-left)
+	(kill-emacs))))
+
+(defun tfb-and-exit ()
+  "Texinfo-format-buffer and kill-emacs."
+  (if command-line-args-left
+      (let ((load-path (cons ".." load-path)))
+	(and (fboundp 'set-language-environment)
+	     (featurep 'mule)
+	     (set-language-environment "Japanese"))
+	(mapcar (function
+		 (lambda (arg)
+		   (find-file arg)
+		   (texinfo-format-buffer)
+		   (basic-save-buffer)))
+		command-line-args-left)
 	(kill-emacs))))
 
 (provide 'yatexlib)

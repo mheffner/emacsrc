@@ -1,15 +1,15 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; Yet Another tex-mode for emacs - //–ì’¹//
-;;; yatex.el rev. 1.72.zh
-;;; (c)1991-2004 by HIROSE Yuuji.[yuuji@yatex.org]
-;;; Last modified Wed Dec 29 23:42:37 2004 on firestorm
+;;; yatex.el rev. 1.72.zu
+;;; (c)1991-2005 by HIROSE Yuuji.[yuuji@yatex.org]
+;;; Last modified Sun Jan  8 11:32:12 2006 on firestorm
 ;;; $Id: yatex.el,v 1.72 2003/12/25 04:10:54 yuuji Rel yuuji $
 ;;; The latest version of this software is always available at;
 ;;; http://www.yatex.org/
 
 (require 'comment)
 (require 'yatexlib)
-(defconst YaTeX-revision-number "1.72.zh"
+(defconst YaTeX-revision-number "1.72.zu"
   "Revision number of running yatex.el")
 
 ;---------- Local variables ----------
@@ -107,10 +107,6 @@ other process, user or OS.  Define to this variable a message string of your
 latex command on DOS shown at abnormal termination.
   Remember Demacs's call-process function is not oriented for interactive
 process.")
-
-(defvar latex-message-kanji-code 2
-  "*Kanji coding system latex command types out.
-1 = Shift JIS, 2 = JIS, 3 = EUC.")
 
 (defvar NTT-jTeX nil
   "*T for using NTT-jTeX for latex command.
@@ -252,12 +248,14 @@ Nil for removing only one commenting character at the beginning-of-line.")
      ("footnote") ("footnotetext") ("index")
      ("hspace*") ("vspace*") ("bibliography") ("bibitem") ("cite")
      ("input") ("include") ("includeonly") ("mbox") ("hbox") ("caption")
+     ("arabic")
+     ("newcounter")
      ("newlength") ("setlength" 2) ("addtolength" 2) ("settowidth" 2)
      ("setcounter" 2) ("addtocounter" 2) ("stepcounter" 2)
      ("newcommand" 2) ("renewcommand" 2)
-     ("setcounter" 2) ("newenvironment" 3) ("newtheorem" 2)
+     ("newenvironment" 3) ("newtheorem" 2)
      ("cline") ("framebox") ("savebox" 2) ("sbox" 2) ("newsavebox") ("usebox")
-     ("date") ("put") ("ref") ("pageref") ("raisebox" 2)
+     ("date") ("put") ("ref") ("pageref") ("tabref") ("figref") ("raisebox" 2)
      ("multicolumn" 3) ("shortstack")
      ;; for mathmode accent
      ("tilde") ("hat") ("check") ("bar") ("dot") ("ddot") ("vec")
@@ -373,6 +371,7 @@ Nil for removing only one commenting character at the beginning-of-line.")
      ("footnotemark") ("verb") ("verb*")
      ("linebreak") ("pagebreak") ("noindent") ("indent")
      ("left") ("right") ("dots") ("smallskip") ("medskip") ("bigskip")
+     ("displaystyle")
      )
    (if YaTeX-greek-by-maketitle-completion
        '(("alpha") ("beta") ("gamma") ("delta") ("epsilon")
@@ -1863,7 +1862,7 @@ Call this function after YaTeX-on-section-command-p."
 		       (string-to-char YaTeX-ec))
 		(forward-char -1))))
       ;(beginning-of-line)
-      (if (equal (char-after) ?\\) nil	;stay here
+      (if (equal (char-after (point)) ?\\) nil	;stay here
 	(skip-chars-backward "^\n\\\\")
 	(or (bolp) (forward-char -1))))
     (re-search-forward
@@ -2600,11 +2599,18 @@ Optional second argument THISENV omits calling YaTeX-inner-environment."
 	 ((string-match "tabular" inenv)
 	  (let ((b (point-beginning-of-line))
 		(e (point-end-of-line)))
-	    (if (re-search-backward "&\\|\\\\\\\\" border t)
-		(setq b (point-beginning-of-line)))
+	    (if (re-search-backward
+		 "&\\|\\\\\\\\\\|\\\\\\(begin\\|end\\){" border t)
+		(setq b (if (match-beginning 1)
+			    (progn (forward-line 1) (point))
+			  (point-beginning-of-line))))
 	    (goto-char p)
-	    (if (re-search-forward  "&\\|\\\\\\\\\\|\\\\end{" nil t)
-		(setq e (match-beginning 0)))
+	    (if (re-search-forward
+		 "&\\|\\\\\\\\\\|\\\\\\(end\\|begin\\){" nil t)
+		(setq e (if (match-beginning 1)
+			    (progn (forward-line -1)
+				   (point-end-of-line))
+			  (match-beginning 0))))
 	    (set-mark e)
 	    (goto-char b)))
 	 (t
@@ -2652,7 +2658,7 @@ Optional second argument THISENV omits calling YaTeX-inner-environment."
 	  (goto-char (point-min))
 	  (forward-word 1)
 	  (beginning-of-line)
-	  (while (re-search-forward "\\\\\\(\\(page\\)?ref\\|cite\\){" nil t)
+	  (while (re-search-forward "\\\\\\([a-z]*ref\\|cite\\){" nil t)
 	    (if (< (point-end-of-line)
 		   (save-excursion (forward-char -1) (forward-list 1) (point)))
 		(progn (end-of-line)

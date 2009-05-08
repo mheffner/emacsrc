@@ -1,7 +1,7 @@
 ;;; -*- Emacs-Lisp -*-
 ;;; YaTeX facilities for Emacs 19
 ;;; (c)1994-2004 by HIROSE Yuuji.[yuuji@yatex.org]
-;;; Last modified Sun Feb 29 01:43:48 2004 on firestorm
+;;; Last modified Sat Nov 19 08:38:26 2005 on firestorm
 ;;; $Id: yatex19.el,v 1.72 2003/12/25 04:10:54 yuuji Rel yuuji $
 
 ;(require 'yatex)
@@ -411,11 +411,11 @@ Assumes PATTERN begins with `{'."
 
     ;; things that do some sort of cross-reference
     (YaTeX-19-region-section-type
-     "\\\\\\(\\(no\\)?cite\\|\\(page\\|eq\\)?ref\\|label\\|index\\|glossary\\)\\>"
+     "\\\\\\(\\(no\\|possessive\\)?cite[a-z]*\\|[a-z]*ref\\|label\\|index\\|glossary\\)\\>"
      crossref)
 
     ;; things that bring in external files
-    ("\\\\\\(include\\|input\\|bibliography\\){" "}" include)
+    ("\\\\\\(include\\|input\\|bibliography\\(style\\)?\\){" "}" include)
 
    ;; ("\\\\begin{\\(eqn\\|equation\\|x?x?align\\|split\\|multline\\|gather\\)"
    ;;  "\\\\end{\\(eqn\\|equation\\|x?x?align\\|split\\|multline\\|gather\\).*}"
