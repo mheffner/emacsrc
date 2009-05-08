@@ -1,5 +1,5 @@
 
-(add-to-list 'load-path "/home/spock/emacs/lisp")
+(add-to-list 'load-path "/home/mheffner/emacs/lisp")
 
 ;; key/mouse bindings
 
@@ -11,9 +11,6 @@
 (define-key global-map [(f1)] 'delete-other-windows)
 (define-key global-map [(f5)] 'buffer-menu)
 (define-key global-map [(f6)] 'fume-list-functions)
-
-;; paragraph fill
-(global-set-key [(meta q)] 'fill-paragraph)
 
 ;; xcscope bindings
 (define-key global-map [(control f3)]  'cscope-set-initial-directory)
@@ -31,6 +28,9 @@
 (define-key global-map [(meta f10)] 'cscope-display-buffer-toggle)
 (define-key global-map [(control h)] 'backward-delete-char)
 
+;; for terminal
+; (define-key global-map [(meta \[)] 'end-of-buffer)
+
 ;; some global variables
 (setq-default c-tab-always-indent nil)
 (setq-default delete-key-deletes-forward t)
@@ -43,7 +43,6 @@
 (setq-default line-number-mode t)
 (setq-default kill-whole-line t)
 (setq-default display-time-day-and-date t)
-;; (setq-default user-mail-address (quote mheffner@vt.edu))
 (setq-default sgml-indent-data t)
 
 ;; html for php
@@ -62,10 +61,14 @@
         '(lambda ()
                 (auto-fill-mode 0)))
 
+;;
+;; Key bindings
+;;
+(global-set-key [(meta q)] 'fill-paragraph)
+
 ;; SML mode
 ;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/sml-mode")
 ;; (load "sml-mode-startup")
-
 
 ;; xcscope
 (require 'xcscope)
@@ -74,6 +77,11 @@
 (require 'func-menu)
 
 (add-to-list 'load-path "/usr/share/emacs/site-lisp")
+(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/psgml")
+
+(require 'psgml)
+(setq auto-mode-alist (cons '("\\.docbook$" . sgml-mode) auto-mode-alist))
+(autoload 'sgml-mode "psgml" "Major mode to edit SGML files." t)
 
 ;; whitespace trimmer
 (require 'ws-trim)
@@ -86,12 +94,30 @@
 ;; whitespace checker
 (require 'whitespace)
 
+(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/docbookide")
+
+;; DocBook IDE mode
+(autoload 'docbook-mode "docbookide" "Major mode for DocBook documents." t)
+
+;; Turn on font lock when in DocBook mode
+(add-hook 'docbook-mode-hook
+          'turn-on-font-lock)
+
+;; You might want to make this the default for .sgml or .xml documents,
+;; or you might want to rely on -*- DocBook -*- on the first line,
+;; or perhaps buffer variables. It's up to you...
+;;(setq auto-mode-alist
+;;      (append
+;;       (list
+;;      '("\\.sgm" . docbook-mode))
+;;      '("\\.sgml" . docbook-mode))
+;;      '("\\.xml" . docbook-mode))
+;;       auto-mode-alist))
+
+
 ;; whitespace highliter
 ;; (require 'space-mode)
 ;; (space-mode 1)
-
-(require 'actionscript-mode)
-
 
 ;;
 ;; C/C++ Indentation styles
@@ -157,24 +183,23 @@
 	     (if (string-match "xfmail" buffer-file-name)
 		 (xfmail-load)))))
 
+(setq-default c-default-style "cBSD")
+
 ;; yatex
-; (add-to-list 'load-path "/home/spock/emacs/lisp/yatex")
+
+; (add-to-list 'load-path "~/emacs/lisp/yatex1.72.zu")
 ; (require 'yatex)
-; (add-hook 'yatex-mode-hook
-;   '(lambda() (setq indent-tabs-mode nil)))
-; (setq YaTeX-use-font-lock t)
-; (setq auto-mode-alist
-;      (cons (cons "\\.tex$" 'yatex-mode) auto-mode-alist))
-; (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 
 ; (add-hook 'yatex-mode-hook
-;	  '(lambda() (setq indent-tabs-mode nil)))
+; '(lambda() (setq indent-tabs-mode nil)))
+
+; (setq auto-mode-alist (cons '("\\.tex$" . yatex-mode) auto-mode-alist))
 
 ;; python stuff
 
 (setq auto-mode-alist (cons '("\\.py$" . python-mode) auto-mode-alist))
 (setq interpreter-mode-alist (cons '("python" . python-mode)
-                                   interpreter-mode-alist))
+				   interpreter-mode-alist))
 (autoload 'python-mode "python-mode" "Python editing mode." t)
 
 (setq py-indent-offset tab-width)
@@ -186,12 +211,23 @@
 )
 )
 
+;; thrift
+(setq auto-mode-alist (cons '("\\.thrift$" . thrift-mode) auto-mode-alist))
+(autoload 'thrift-mode "thrift" "Thrift editing mode." t)
 
-; cscope
-;(require 'xcscope)
+;; sgml
+(add-to-list 'load-path "/usr/lib/xemacs/xemacs-packages/lisp/sgml")
+
+(setq auto-mode-alist (cons '("\\.sgml$" . sgml-mode) auto-mode-alist))
+(setq interpreter-mode-alist (cons '("sgml" . sgml-mode)
+				   interpreter-mode-alist))
+
+(autoload 'sgml-mode "sgml-mode" "SGML editing mode" t)
+
+;; (require 'pycomplete)
 
 ;; auto-save?
-(setq auto-save-directory (expand-file-name "~/emacs/autosave/")
+(setq auto-save-directory (expand-file-name "/usr/local/mike/emacs-save")
       auto-save-directory-fallback auto-save-directory
       auto-save-hash-p nil
       efs-auto-save t
