@@ -202,8 +202,7 @@
 "python mode hook override."
 (setq tab-width 8)
 (setq py-indent-offset 8)
-)
-)
+))
 
 ;; thrift
 (setq auto-mode-alist (cons '("\\.thrift$" . thrift-mode) auto-mode-alist))
@@ -219,6 +218,28 @@
 (autoload 'sgml-mode "sgml-mode" "SGML editing mode" t)
 
 ;; (require 'pycomplete)
+
+;; ruby
+;;
+(autoload 'ruby-mode "ruby-mode"
+  "Mode for editing ruby source files")
+(setq auto-mode-alist
+      (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+    				     interpreter-mode-alist))
+
+(setq ruby-indent-level tab-width)
+
+(autoload 'run-ruby "inf-ruby"
+  "Run an inferior Ruby process")
+(autoload 'inf-ruby-keys "inf-ruby"
+  "Set local key defs for inf-ruby in ruby-mode")
+(add-hook 'ruby-mode-hook
+          '(lambda ()
+             (inf-ruby-keys)
+	     ))
+
+
 
 ;; auto-save?
 (setq auto-save-directory (expand-file-name "~/work/git_repo/xemacs/autosave")
