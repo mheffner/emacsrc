@@ -221,6 +221,7 @@
 
 ;; ruby
 ;;
+(add-to-list 'load-path "~/work/git_repo/xemacs/lisp/ruby-mode")
 (autoload 'ruby-mode "ruby-mode"
   "Mode for editing ruby source files")
 (setq auto-mode-alist
