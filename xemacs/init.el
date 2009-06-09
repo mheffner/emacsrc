@@ -251,6 +251,7 @@
     				     interpreter-mode-alist))
 
 (setq ruby-indent-level tab-width)
+(setq ruby-indent-tabs-mode t)
 
 (autoload 'run-ruby "inf-ruby"
   "Run an inferior Ruby process")
