@@ -253,6 +253,10 @@
 (setq ruby-indent-level tab-width)
 (setq ruby-indent-tabs-mode t)
 
+(defun rails-load-config ()
+  (setq ruby-indent-level 2)
+  (setq ruby-indent-tabs-mode nil))
+
 (autoload 'run-ruby "inf-ruby"
   "Run an inferior Ruby process")
 (autoload 'inf-ruby-keys "inf-ruby"
@@ -260,6 +264,8 @@
 (add-hook 'ruby-mode-hook
           '(lambda ()
              (inf-ruby-keys)
+	     (if (string-match "/app/" buffer-file-name)
+		 (rails-load-config))
 	     ))
 
 
