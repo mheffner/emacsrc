@@ -1,0 +1,3 @@
+[submodule "xemacs/lisp/gist"]
+	path = xemacs/lisp/gist
+	url = git://github.com/defunkt/gist.el.git

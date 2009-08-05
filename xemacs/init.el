@@ -269,6 +269,12 @@
 		 (rails-load-config))
 	     ))
 
+(add-to-list 'load-path "~/work/git_repo/xemacs/lisp/url")
+(require 'url)
+
+;; gist
+(add-to-list 'load-path "~/work/git_repo/xemacs/lisp/gist")
+(require 'gist)
 
 
 ;; auto-save?
