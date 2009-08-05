@@ -1,7 +1,7 @@
 ;;; url-file.el --- File retrieval code
 ;; Author: $Author: fx $
-;; Created: $Date: 2001/05/22 16:14:26 $
-;; Version: $Revision: 1.9 $
+;; Created: $Date: 2002/04/22 09:14:24 $
+;; Version: $Revision: 1.11 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -88,6 +88,8 @@ to them."
       (apply func args))))
 
 (defun url-file-build-filename (url)
+  (if (not (vectorp url))
+      (setq url (url-generic-parse-url url)))
   (let* ((user (url-user url))
 	 (pass (url-password url))
 	 (port (url-port url))
@@ -95,6 +97,7 @@ to them."
 	 (site (if (and port (/= port 21))
 		   (if (featurep 'ange-ftp)
 		       (format "%s %d" host port)
+		     ;; This works in Emacs 21's ange-ftp too.
 		     (format "%s#%d" host port))
 		 host))
 	 (file (url-unhex-string (url-filename url)))

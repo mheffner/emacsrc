@@ -1,7 +1,7 @@
 ;;; url-methods.el --- Load URL schemes as needed
-;; Author: $Author: fx $
-;; Created: $Date: 2001/10/11 21:11:41 $
-;; Version: $Revision: 1.12 $
+;; Author: $Author: wmperry $
+;; Created: $Date: 2002/11/04 14:40:32 $
+;; Version: $Revision: 1.14 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -86,8 +86,8 @@
      ((string-match "^\\([^:]+\\):\\([0-9]+\\)$" env-proxy)
       (setq urlobj (url-generic-parse-url nil)) ; Get a blank object
       (url-set-type urlobj "http")
-      (url-set-host urlobj (string-match env-proxy 1))
-      (url-set-port urlobj (string-match env-proxy 2)))
+      (url-set-host urlobj (match-string 1 env-proxy))
+      (url-set-port urlobj (string-to-number (match-string 2 env-proxy))))
      ;; Then check if its a fully specified URL
      ((string-match url-nonrelative-link env-proxy)
       (setq urlobj (url-generic-parse-url env-proxy))

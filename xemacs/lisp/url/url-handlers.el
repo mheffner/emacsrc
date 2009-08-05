@@ -1,7 +1,7 @@
 ;;; url-handlers.el --- file-name-handler stuff for URL loading
-;; Author: $Author: fx $
-;; Created: $Date: 2001/10/11 21:14:18 $
-;; Version: $Revision: 1.6 $
+;; Author: $Author: sds $
+;; Created: $Date: 2003/06/26 18:45:45 $
+;; Version: $Revision: 1.10 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -32,6 +32,68 @@
 (require 'mm-decode)
 (require 'mailcap)
 
+(eval-when-compile
+  (require 'cl))
+
+;; Implementation status
+;; ---------------------
+;; Function				Status
+;; ------------------------------------------------------------
+;; add-name-to-file			Needs DAV Bindings
+;; copy-file				Broken (assumes 1st item is URL)
+;; delete-directory			Finished (DAV)
+;; delete-file				Finished (DAV)
+;; diff-latest-backup-file
+;; directory-file-name			unnecessary (what about VMS)?
+;; directory-files			Finished (DAV)
+;; dired-call-process
+;; dired-compress-file
+;; dired-uncache
+;; expand-file-name			Finished
+;; file-accessible-directory-p
+;; file-attributes			Finished, better with DAV
+;; file-directory-p			Needs DAV, finished
+;; file-executable-p			Finished
+;; file-exists-p			Finished
+;; file-local-copy
+;; file-modes
+;; file-name-all-completions		Finished (DAV)
+;; file-name-as-directory
+;; file-name-completion			Finished (DAV)
+;; file-name-directory
+;; file-name-nondirectory
+;; file-name-sans-versions		why?
+;; file-newer-than-file-p
+;; file-ownership-preserved-p		No way to know
+;; file-readable-p			Finished
+;; file-regular-p			!directory_p
+;; file-symlink-p			Needs DAV bindings
+;; file-truename			Needs DAV bindings
+;; file-writable-p			Check for LOCK?
+;; find-backup-file-name		why?
+;; get-file-buffer			why?
+;; insert-directory			Use DAV
+;; insert-file-contents			Finished
+;; load
+;; make-directory			Finished (DAV)
+;; make-symbolic-link			Needs DAV bindings
+;; rename-file				Finished (DAV)
+;; set-file-modes			Use mod_dav specific executable flag?
+;; set-visited-file-modtime		Impossible?
+;; shell-command			Impossible?
+;; unhandled-file-name-directory
+;; vc-registered			Finished (DAV)
+;; verify-visited-file-modtime
+;; write-region
+
+(defvar url-handler-regexp
+  "\\`\\(https?\\|ftp\\|file\\|nfs\\)://"
+  "*A regular expression for matching  URLs handled by file-name-handler-alist.
+Some valid URL protocols just do not make sense to visit interactively
+\(about, data, info, irc, mailto, etc\).  This regular expression
+avoids conflicts with local files that look like URLs \(Gnus is
+particularly bad at this\).")
+
 ;;;###autoload
 (defun url-setup-file-name-handlers ()
   "Setup file-name handlers."
@@ -41,14 +103,15 @@
    ((rassq 'url-file-handler file-name-handler-alist)
     nil)				; Don't load twice
    (t
-    (setq file-name-handler-alist
-	  (let ((new-handler (cons
-			      (concat "^/*"
-				      (substring url-nonrelative-link 1 nil))
-			      'url-file-handler)))
-	    (if file-name-handler-alist
-		(append (list new-handler) file-name-handler-alist)
-	      (list new-handler)))))))
+    (push (cons url-handler-regexp 'url-file-handler)
+	  file-name-handler-alist))))
+
+(defun url-run-real-handler (operation args)
+  (let ((inhibit-file-name-handlers (cons 'url-file-handler
+					  (if (eq operation inhibit-file-name-operation)
+					      inhibit-file-name-handlers)))
+	(inhibit-file-name-operation operation))
+    (apply operation args)))
 
 (defun url-file-handler (operation &rest args)
   "Function called from the `file-name-handler-alist' routines.
@@ -56,15 +119,16 @@ OPERATION is what needs to be done (`file-exists-p', etc).  ARGS are
 the arguments that would have been passed to OPERATION."
   (let ((fn (or (get operation 'url-file-handlers)
 		(intern-soft (format "url-%s" operation))))
-	(url (car args))
-	(myargs (cdr args)))
+	(val nil)
+	(hooked nil))
     (if (and fn (fboundp fn))
-	(progn
-	  (if (= (string-to-char url) ?/)
-	      (setq url (substring url 1 nil)))
-	  (apply fn url myargs))
-      (let (file-name-handler-alist)
-	(apply operation url myargs)))))
+	(setq hooked t
+	      val (apply fn args))
+      (setq hooked nil
+	    val (url-run-real-handler operation args)))
+    (url-debug 'handlers "%s %S%S => %S" (if hooked "Hooked" "Real")
+	       operation args val)
+    val))
 
 (defun url-file-handler-identity (&rest args)
   ;; Identity function
@@ -73,6 +137,17 @@ the arguments that would have been passed to OPERATION."
 ;; These are operations that we can fully support
 (put 'file-readable-p 'url-file-handlers 'url-file-exists-p)
 (put 'substitute-in-file-name 'url-file-handlers 'url-file-handler-identity)
+(put 'file-name-absolute-p 'url-file-handlers (lambda (&rest ignored) t))
+(put 'expand-file-name 'url-file-handlers 'url-handler-expand-file-name)
+
+;; These are operations that we do not support yet (DAV!!!)
+(put 'file-writable-p 'url-file-handlers 'ignore)
+(put 'file-symlink-p 'url-file-handlers 'ignore)
+
+(defun url-handler-expand-file-name (file &optional base)
+  (if (file-name-absolute-p file)
+      (expand-file-name file "/")
+    (url-expand-file-name file base)))
 
 ;; The actual implementation
 ;;;###autoload
@@ -115,6 +190,7 @@ accessible."
 	(data nil))
     (if (not buffer)
 	(error "Opening input file: No such file or directory, %s" url))
+    (if visit (setq buffer-file-name url))
     (save-excursion
       (set-buffer buffer)
       (setq handle (mm-dissect-buffer t))
@@ -125,7 +201,8 @@ accessible."
     (kill-buffer buffer)
     (mm-destroy-parts handle)
     (if replace (delete-region (point-min) (point-max)))
-    (insert data)
+    (save-excursion
+      (insert data))
     (list url (length data))))
 
 (defun url-file-name-completion (url directory)
@@ -136,12 +213,13 @@ accessible."
 
 ;; All other handlers map onto their respective backends.
 (defmacro url-handlers-create-wrapper (method args)
-  (` (defun (, (intern (format "url-%s" method))) (, args)
-       (, (format "URL file-name-handler wrapper for `%s' call.\n---\n%s" method
-		  (or (documentation method t) "No original documentation.")))
-       (setq url (url-generic-parse-url url))
-       (funcall (url-scheme-get-property (url-type url) (quote (, method)))
-		(,@ (remove '&rest (remove '&optional args)))))))
+  `(defun ,(intern (format "url-%s" method)) ,args
+     ,(format "URL file-name-handler wrapper for `%s' call.\n---\n%s" method
+              (or (documentation method t) "No original documentation."))
+     (setq url (url-generic-parse-url url))
+     (when (url-type url)
+       (funcall (url-scheme-get-property (url-type url) (quote ,method))
+                ,@(remove '&rest (remove '&optional args))))))
 
 (url-handlers-create-wrapper file-exists-p (url))
 (url-handlers-create-wrapper file-attributes (url))
@@ -162,5 +240,13 @@ accessible."
    directory-files (url &optional full match nosort))
   (url-handlers-create-wrapper
    file-truename (url &optional counter prev-dirs)))
+
+(add-hook 'find-file-hooks 'url-handlers-set-buffer-mode)
+
+(defun url-handlers-set-buffer-mode ()
+  "Set correct modes for the current buffer if visiting a remote file."
+  (and (stringp buffer-file-name)
+       (string-match url-handler-regexp buffer-file-name)
+       (auto-save-mode 0)))
 
 (provide 'url-handlers)

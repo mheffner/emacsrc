@@ -1,7 +1,7 @@
 ;;; url-imap.el --- IMAP retrieval routines
 ;; Author: Simon Josefsson <jas@pdc.kth.se>
-;; Created: $Date: 2001/05/05 16:24:01 $
-;; Version: $Revision: 1.2 $
+;; Created: $Date: 2002/01/22 17:52:16 $
+;; Version: $Revision: 1.4 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,6 +35,7 @@
 (require 'url-util)
 (require 'url-parse)
 (require 'nnimap)
+(require 'mm-util)
 
 (defconst url-imap-default-port 143 "Default IMAP port")
 
@@ -42,21 +43,26 @@
   ;; xxx use user and password
   (if (fboundp 'nnheader-init-server-buffer)
       (nnheader-init-server-buffer))
-  (let ((nnimap-server-buffer (format " *url-imap on %s:%d*" host port)))
-    (nnimap-open-server host (list (list 'nnimap-server-port
-					 (if (integerp port) port
-					   (string-to-int port)))
-				   '(nnimap-stream network)
-				   '(nnimap-authenticator anonymous)))))
+  (let ((imap-username user)
+	(imap-password pass)
+	(authenticator (if user 'login 'anonymous)))
+    (if (stringp port)
+	(setq port (string-to-int port)))
+    (nnimap-open-server host
+			`((nnimap-server-port ,port)
+			  (nnimap-stream 'network)
+			  (nnimap-authenticator ,authenticator)))))
 
 (defun url-imap (url)
   (check-type url vector "Need a pre-parsed URL.")
   (save-excursion
     (set-buffer (generate-new-buffer " *url-imap*"))
+    (mm-disable-multibyte)
     (let* ((host (url-host url))
 	   (port (url-port url))
 	   ;; xxx decode mailbox (see rfc2192)
-	   (mailbox (url-filename url)))
+	   (mailbox (url-filename url))
+	   (coding-system-for-read 'binary))
       (and (eq (string-to-char mailbox) ?/)
 	   (setq mailbox (substring mailbox 1)))
       (url-imap-open-host host port (url-user url) (url-password url))

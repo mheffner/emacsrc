@@ -1,7 +1,7 @@
 ;;; url-util.el --- Miscellaneous helper routines for URL library
 ;; Author: Bill Perry <wmperry@gnu.org>
-;; Created: $Date: 2001/10/01 11:46:49 $
-;; Version: $Revision: 1.9 $
+;; Created: $Date: 2002/04/22 09:16:11 $
+;; Version: $Revision: 1.14 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -38,6 +38,38 @@
 (modify-syntax-entry ?` "\"" url-parse-args-syntax-table)
 (modify-syntax-entry ?{ "(" url-parse-args-syntax-table)
 (modify-syntax-entry ?} ")" url-parse-args-syntax-table)
+
+;;;###autoload
+(defcustom url-debug nil
+  "*What types of debug messages from the URL library to show.
+Debug messages are logged to the *URL-DEBUG* buffer.
+
+If t, all messages will be logged.
+If a number, all messages will be logged, as well shown via `message'.
+If a list, it is a list of the types of messages to be logged."
+  :type '(choice (const :tag "none" nil)
+		 (const :tag "all" t)
+		 (checklist :tag "custom"
+			    (const :tag "HTTP" :value http)
+			    (const :tag "DAV" :value dav)
+			    (const :tag "General" :value retrieval)
+			    (const :tag "Filename handlers" :value handlers)
+			    (symbol :tag "Other")))
+  :group 'url-hairy)
+
+;;;###autoload
+(defun url-debug (tag &rest args)
+  (if quit-flag
+      (error "Interrupted!"))
+  (if (or (eq url-debug t)
+	  (numberp url-debug)
+	  (and (listp url-debug) (memq tag url-debug)))
+      (save-excursion
+	(set-buffer (get-buffer-create "*URL-DEBUG*"))
+	(goto-char (point-max))
+	(insert (symbol-name tag) " -> " (apply 'format args) "\n")
+	(if (numberp url-debug)
+	    (apply 'message args)))))
 
 ;;;###autoload
 (defun url-parse-args (str &optional nodowncase)
@@ -100,7 +132,7 @@
 ;;;###autoload
 (defun url-insert-entities-in-string (string)
   "Convert HTML markup-start characters to entity references in STRING.
-  Also replaces the \" character, so that the result may be safely used as
+Also replaces the \" character, so that the result may be safely used as
   an attribute value in a tag.  Returns a new string with the result of the
   conversion.  Replaces these characters as follows:
     &  ==>  &amp;
@@ -128,8 +160,8 @@
 
 ;;;###autoload
 (defun url-normalize-url (url)
-  "Return a 'normalized' version of URL.  This strips out default port
-numbers, etc."
+  "Return a 'normalized' version of URL.
+Strips out default port numbers, etc."
   (let (type data grok retval)
     (setq data (url-generic-parse-url url)
 	  type (url-type data))
@@ -214,7 +246,7 @@ Will not do anything if url-show-status is nil."
   (if (null fmt)
       (if (fboundp 'clear-progress-display)
 	  (clear-progress-display))
-    (if (fboundp 'progress-display)
+    (if (and (fboundp 'progress-display) perc)
 	(apply 'progress-display fmt perc args)
       (apply 'message fmt args))))
 
@@ -226,7 +258,7 @@ Will not do anything if url-show-status is nil."
 
 ;;;###autoload
 (defun url-basepath (file &optional x)
-  "Return the base pathname of FILE, or the actual filename if X is true"
+  "Return the base pathname of FILE, or the actual filename if X is true."
   (cond
    ((null file) "")
    ((string-match (eval-when-compile (regexp-quote "?")) file)
@@ -276,7 +308,7 @@ forbidden in URL encoding."
 	     (ch1 (url-unhex (elt str (+ start 1))))
 	     (code (+ (* 16 ch1)
 		      (url-unhex (elt str (+ start 2))))))
-	(setq tmp (concat 
+	(setq tmp (concat
 		   tmp (substring str 0 start)
 		   (cond
 		    (allow-newlines
@@ -299,7 +331,7 @@ This is taken from RFC 2396.")
 
 ;;;###autoload
 (defun url-hexify-string (str)
-  "Escape characters in a string"
+  "Escape characters in a string."
   (mapconcat
    (lambda (char)
      ;; Fixme: use a char table instead.
@@ -310,11 +342,12 @@ This is taken from RFC 2396.")
 	       (error "Hexifying multibyte character %s" str))
 	   (format "%%%X" char))
        (char-to-string char)))
-   ""))
+   str ""))
 
 ;;;###autoload
 (defun url-file-extension (fname &optional x)
-  "Return the filename extension of FNAME.  If optional variable X is t,
+  "Return the filename extension of FNAME.
+If optional variable X is t,
 then return the basename of the file with the extension stripped off."
   (if (and fname
 	   (setq fname (url-basepath fname t))
@@ -322,7 +355,7 @@ then return the basename of the file with the extension stripped off."
       (if x (substring fname 0 (match-beginning 0))
 	(substring fname (match-beginning 0) nil))
     ;;
-    ;; If fname has no extension, and x then return fname itself instead of 
+    ;; If fname has no extension, and x then return fname itself instead of
     ;; nothing. When caching it allows the correct .hdr file to be produced
     ;; for filenames without extension.
     ;;
@@ -367,8 +400,11 @@ WIDTH defaults to the current frame width."
 
 ;;;###autoload
 (defun url-view-url (&optional no-show)
-  "View the current document's URL.  Optional argument NO-SHOW means
-just return the URL, don't show it in the minibuffer."
+  "View the current document's URL.
+Optional argument NO-SHOW means just return the URL, don't show it in
+the minibuffer.
+
+This uses `url-current-object', set locally to the buffer."
   (interactive)
   (if (not url-current-object)
       nil
@@ -382,9 +418,8 @@ just return the URL, don't show it in the minibuffer."
   )
 
 (defun url-get-url-at-point (&optional pt)
-  "Get the URL closest to point, but don't change your
-position. Has a preference for looking backward when not
-directly on a symbol."
+  "Get the URL closest to point, but don't change position.
+Has a preference for looking backward when not directly on a symbol."
   ;; Not at all perfect - point must be right in the name.
   (save-excursion
     (if pt (goto-char pt))

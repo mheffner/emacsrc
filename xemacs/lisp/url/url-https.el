@@ -1,7 +1,7 @@
 ;;; url-https.el --- HTTP over SSL routines
 ;; Author: $Author: wmperry $
-;; Created: $Date: 1999/12/15 18:36:48 $
-;; Version: $Revision: 1.2 $
+;; Created: $Date: 2001/11/22 14:32:13 $
+;; Version: $Revision: 1.3 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,9 +43,9 @@
 	 (error
 	  (error "HTTPS support could not find `ssl' library.")))
        (let ((url-gateway-method 'ssl))
-	 ((, (intern (format "url-http-%s" method))) (,@ (remove '&rest (remove '&optional args))))))))
+	 ((, (intern (format (if method "url-http-%s" "url-http") method))) (,@ (remove '&rest (remove '&optional args))))))))
 
-(url-https-create-secure-wrapper nil (url))
+(url-https-create-secure-wrapper nil (url callback cbargs))
 (url-https-create-secure-wrapper file-exists-p (url))
 (url-https-create-secure-wrapper file-readable-p (url))
 (url-https-create-secure-wrapper file-attributes (url))

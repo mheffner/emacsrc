@@ -1,7 +1,7 @@
 ;;; url-gw.el --- Gateway munging for URL loading
 ;; Author: Bill Perry <wmperry@gnu.org>
-;; Created: $Date: 2001/10/11 21:08:18 $
-;; $Revision: 1.6 $
+;; Created: $Date: 2002/04/22 09:26:46 $
+;; $Revision: 1.8 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -26,6 +26,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (eval-when-compile (require 'cl))
 (require 'url-vars)
+
+;; Fixme: support SSH explicitly or via a url-gateway-rlogin-program?
 
 (autoload 'socks-open-network-stream "socks")
 (autoload 'open-ssl-stream "ssl")
@@ -237,15 +239,14 @@ Will not make a connexion if `url-gateway-unplugged' is non-nil."
 	  (setq host (url-gateway-nslookup-host host)))
 
       (condition-case errobj
-	 ;; This is a clean way to ensure the new process inherits the
+	  ;; This is a clean way to ensure the new process inherits the
 	  ;; right coding systems in both Emacs and XEmacs.
 	  (let ((coding-system-for-read 'binary)
 		(coding-system-for-write 'binary))
 	    (setq conn (case gw-method
 			 (ssl
 			  (open-ssl-stream name buffer host service))
-			 ((tcp native)
-			  (and (eq 'tcp gw-method) (require 'tcp))
+			 ((native)
 			  (open-network-stream name buffer host service))
 			 (socks
 			  (socks-open-network-stream name buffer host service))

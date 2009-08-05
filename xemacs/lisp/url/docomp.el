@@ -49,6 +49,7 @@
       (erase-buffer)
       (mapcar 'generate-file-autoloads files)
       (goto-char (point-max))
+      (setq buffer-read-only nil)
       (insert "\n(provide 'url-autoloads)\n")
       (save-buffer)
       (kill-buffer (current-buffer))))

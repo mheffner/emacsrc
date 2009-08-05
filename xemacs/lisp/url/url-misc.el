@@ -1,12 +1,12 @@
 ;;; url-misc.el --- Misc Uniform Resource Locator retrieval code
 ;; Author: $Author: fx $
-;; Created: $Date: 2001/05/15 23:04:31 $
-;; Version: $Revision: 1.4 $
+;; Created: $Date: 2002/04/22 22:23:59 $
+;; Version: $Revision: 1.5 $
 ;; Keywords: comm, data, processes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Copyright (c) 1993 - 1996 by William M. Perry <wmperry@cs.indiana.edu>
-;;; Copyright (c) 1996 - 1999 Free Software Foundation, Inc.
+;;; Copyright (c) 1996, 97, 98, 99, 2002 Free Software Foundation, Inc.
 ;;;
 ;;; This file is part of GNU Emacs.
 ;;;
@@ -29,15 +29,17 @@
 (require 'url-vars)
 (require 'url-parse)
 (autoload 'Info-goto-node "info" "" t)
+(autoload 'man "man" nil t)
 
 ;;;###autoload
 (defun url-man (url)
-  (require 'man)
+  "Fetch a Unix manual page URL."
   (man (url-filename url))
   nil)
 
 ;;;###autoload
 (defun url-info (url)
+  "Fetch a GNU Info URL."
   ;; Fetch an info node
   (let* ((fname (url-filename url))
 	 (node (url-unhex-string (or (url-target url) "Top"))))
@@ -85,25 +87,30 @@
 ;;;###autoload
 (defalias 'url-tn3270 'url-generic-emulator-loader)
 
-;; ftp://ietf.org/internet-drafts/draft-masinter-url-data-02.txt
+;; RFC 2397
 ;;;###autoload
 (defun url-data (url)
-  (let ((content-type nil)
-	(desc (url-filename url))
-	(encoding nil)
+  "Fetch a data URL (RFC 2397)."
+  (let ((mediatype nil)
+	;; The mediatype may need to be hex-encoded too -- see the RFC.
+	(desc (url-unhex-string (url-filename url)))
+	(encoding "8bit")
 	(data nil))
     (save-excursion
-      (if (not (string-match "\\([^;,]*\\);*\\([^,]*\\)," desc))
+      (if (not (string-match "\\([^,]*\\)?," desc))
 	  (error "Malformed data URL: %s" desc)
-	(setq content-type (match-string 1 desc)
-	      encoding (match-string 2 desc)
-	      data (url-unhex-string (substring desc (match-end 0)))))
+	(setq mediatype (match-string 1 desc))
+	(if (and mediatype (string-match ";base64\\'" mediatype))
+	    (setq mediatype (substring mediatype 0 (match-beginning 0))
+		  encoding "base64"))
+	(if (or (null mediatype)
+		(eq ?\; (aref mediatype 0)))
+	  (setq mediatype (concat "text/plain" mediatype)))
+	(setq data (url-unhex-string (substring desc (match-end 0)))))
       (set-buffer (generate-new-buffer " *url-data*"))
       (mm-disable-multibyte)
-      (if (= 0 (length content-type)) (setq content-type "text/plain"))
-      (if (= 0 (length encoding)) (setq encoding "8bit"))
       (insert (format "Content-Length: %d\n" (length data))
-	      "Content-Type: " content-type "\n"
+	      "Content-Type: " mediatype "\n"
 	      "Content-Encoding: " encoding "\n"
 	      "\n")
       (if data (insert data))

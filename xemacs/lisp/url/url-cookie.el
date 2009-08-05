@@ -1,7 +1,7 @@
 ;;; url-cookie.el --- Netscape Cookie support
-;; Author: $Author: fx $
-;; Created: $Date: 2001/05/04 14:16:32 $
-;; Version: $Revision: 1.5 $
+;; Author: $Author: wmperry $
+;; Created: $Date: 2002/10/29 14:44:59 $
+;; Version: $Revision: 1.7 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -84,7 +84,7 @@
   :type 'boolean
   :group 'url-cookie)
 
-(defcustom url-cookie-multiple-line t
+(defcustom url-cookie-multiple-line nil
   "*If nil, HTTP requests put all cookies for the server on one line.
 Some web servers, such as http://www.hotmail.com/, only accept cookies
 when they are on one line.  This is broken behaviour, but just try
@@ -327,25 +327,19 @@ telling Microsoft that.")
      (t
       nil))))
 
-(defun url-header-comparison (x y)
-  (string= (downcase x) (downcase y)))
-
 ;;;###autoload
 (defun url-cookie-handle-set-cookie (str)
   (setq url-cookies-changed-since-last-save t)
   (let* ((args (url-parse-args str t))
 	 (case-fold-search t)
-	 (secure (and (assoc* "secure" args :test 'url-header-comparison) t))
-	 (domain (or (cdr-safe (assoc* "domain" args :test
-				       'url-header-comparison))
+	 (secure (and (assoc-ignore-case "secure" args) t))
+	 (domain (or (cdr-safe (assoc-ignore-case "domain" args))
 		     (url-host url-current-object)))
 	 (current-url (url-view-url t))
 	 (trusted url-cookie-trusted-urls)
 	 (untrusted url-cookie-untrusted-urls)
-	 (expires (cdr-safe (assoc* "expires" args :test
-				    'url-header-comparison)))
-	 (path (or (cdr-safe (assoc* "path" args :test
-				     'url-header-comparison))
+	 (expires (cdr-safe (assoc-ignore-case "expires" args)))
+	 (path (or (cdr-safe (assoc-ignore-case "path" args))
 		   (file-name-directory
 		    (url-filename url-current-object))))
 	 (rest nil))
@@ -434,8 +428,8 @@ telling Microsoft that.")
 
 (defvar url-cookie-timer nil)
 
-(defcustom url-cookie-save-interval 4600
-  "*The number of seconds between automatic saves of the history list.
+(defcustom url-cookie-save-interval 3600
+  "*The number of seconds between automatic saves of cookies.
 Default is 1 hour.  Note that if you change this variable outside of
 the `customize' interface after `url-do-setup' has been run, you need
 to run the `url-cookie-setup-save-timer' function manually."

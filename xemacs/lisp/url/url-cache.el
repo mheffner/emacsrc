@@ -1,7 +1,7 @@
 ;;; url-cache.el --- Uniform Resource Locator retrieval tool
 ;; Author: $Author: fx $
-;; Created: $Date: 2001/05/15 22:58:08 $
-;; Version: $Revision: 1.3 $
+;; Created: $Date: 2002/01/22 17:53:45 $
+;; Version: $Revision: 1.4 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -35,7 +35,7 @@
 
 ;; Cache manager
 (defun url-cache-file-writable-p (file)
-  "Follows the documentation of file-writable-p, unlike file-writable-p."
+  "Follows the documentation of `file-writable-p', unlike `file-writable-p'."
   (and (file-writable-p file)
        (if (file-exists-p file)
            (not (file-directory-p file))

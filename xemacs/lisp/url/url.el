@@ -1,6 +1,6 @@
 ;;; url.el --- Uniform Resource Locator retrieval tool
 ;; Author: Bill Perry <wmperry@gnu.org>
-;; Version: $Revision: 1.10 $
+;; Version: $Revision: 1.15 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -24,6 +24,8 @@
 ;;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;;; Boston, MA 02111-1307, USA.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Registered URI schemes: http://www.iana.org/assignments/uri-schemes
 
 (eval-when-compile (require 'cl))
 ;; Don't require CL at runtime if we can avoid it (Emacs 21).
@@ -50,6 +52,7 @@
 (require 'url-methods)
 (require 'url-proxy)
 (require 'url-parse)
+(require 'url-util)
 
 ;; Fixme: customize? convert-standard-filename? 
 ;;;###autoload
@@ -122,7 +125,7 @@ Emacs."
       (setq url-passwd-entry-func 'read-passwd))
      ((or (featurep 'ange-ftp)		; Using ange-ftp
 	  (and (boundp 'file-name-handler-alist)
-	       (not (string-match "Lucid" (emacs-version)))))
+	       (not (featurep 'xemacs)))) ; ??
       (setq url-passwd-entry-func 'ange-ftp-read-passwd))
      (t
       (url-warn
@@ -140,11 +143,10 @@ Emacs."
   "Retrieve URL asynchronously and call CALLBACK with CBARGS when finished.
 The callback is called when the object has been completely retrieved, with
 the current buffer containing the object, and any MIME headers associated
-with it.
+with it.  URL is either a string or a parsed URL.
 
-Returns the buffer URL will load into, or nil if the process has
-already completed.
-"
+Return the buffer URL will load into, or nil if the process has
+already completed."
   (url-do-setup)
   (url-gc-dead-buffers)
   (if (stringp url)
@@ -175,16 +177,16 @@ already completed.
 
 (defun url-retrieve-synchronously (url)
   "Retrieve URL synchronously.
-Returns the buffer containing the URL, or nil if there is no data associated
-with it (this is the case for dired, info, or mailto URLs that need no further
-processing).
-"
+Return the buffer containing the data, or nil if there are no data
+associated with it (the case for dired, info, or mailto URLs that need
+no further processing).  URL is either a string or a parsed URL."
   (url-do-setup)
 
   (lexical-let ((retrieval-done nil)
 		(asynch-buffer nil))
     (setq asynch-buffer
 	  (url-retrieve url (lambda (&rest ignored)
+			      (url-debug 'retrieval "Synchronous fetching done (%S)" (current-buffer))
 			      (setq retrieval-done t
 				    asynch-buffer (current-buffer)))))
     (if (not asynch-buffer)
@@ -193,6 +195,19 @@ processing).
 	;; package.
 	nil
       (while (not retrieval-done)
+	(url-debug 'retrieval "Spinning in url-retrieve-synchronously: %S (%S)"
+		   retrieval-done asynch-buffer)
+	;; Quoth monnier:
+	;; It turns out that the problem seems to be that the (sit-for
+	;; 0.1) below doesn't actually process the data: instead it
+	;; returns immediately because there is keyboard input
+	;; waiting, so we end up spinning endlessly waiting for the
+	;; process to finish while not letting it finish.
+
+	;; However, raman claims that it blocks Emacs with Emacspeak
+	;; for unexplained reasons.  Put back for his benefit until
+	;; someone can understand it.
+	;; (sleep-for 0.1)
 	(sit-for 0.1))
       asynch-buffer)))
 
@@ -203,10 +218,16 @@ processing).
       (set-buffer (generate-new-buffer (url-recreate-url url-current-object)))
       (if (eq (mm-display-part handle) 'external)
 	  (progn
+	    (set-process-sentinel
+	     ;; Fixme: this shouldn't have to know the form of the
+	     ;; undisplayer produced by `mm-display-part'.
+	     (get-buffer-process (cdr (mm-handle-undisplayer handle)))
+	     `(lambda (proc event)
+		(mm-destroy-parts (quote ,handle))))
 	    (message "Viewing externally")
 	    (kill-buffer (current-buffer)))
-	(display-buffer (current-buffer))))
-    (mm-destroy-parts handle)))
+	(display-buffer (current-buffer))
+	(mm-destroy-parts handle)))))
 
 (defun url-mm-url (url)
   "Retrieve URL and pass to the appropriate viewing application."

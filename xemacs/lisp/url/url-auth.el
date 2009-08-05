@@ -1,7 +1,7 @@
 ;;; url-auth.el --- Uniform Resource Locator authorization modules
-;; Author: $Author: fx $
-;; Created: $Date: 2001/05/22 16:15:21 $
-;; Version: $Revision: 1.3 $
+;; Author: $Author: wmperry $
+;; Created: $Date: 2001/12/05 19:05:51 $
+;; Version: $Revision: 1.4 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -48,11 +48,14 @@
 ;;;
 ;;; This is very insecure, but it works as a proof-of-concept
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar url-basic-auth-storage nil
-  "Where usernames and passwords are stored.  Its value is an assoc list of
-assoc lists.  The first assoc list is keyed by the server name.  The cdr of
-this is an assoc list based on the 'directory' specified by the url we are
-looking up.")
+(defvar url-basic-auth-storage 'url-http-real-basic-auth-storage
+  "Where usernames and passwords are stored.
+
+Must be a symbol pointing to another variable that will actually store
+the information.  The value of this variable is an assoc list of assoc
+lists.  The first assoc list is keyed by the server name.  The cdr of
+this is an assoc list based on the 'directory' specified by the url we
+are looking up.")
 
 (defun url-basic-auth (url &optional prompt overwrite realm args)
   "Get the username/password for the specified URL.
@@ -73,19 +76,20 @@ instead of the pathname inheritance method."
 		(realm realm)
 		((string-match "/$" path) path)
 		(t (url-basepath path)))
-	  byserv (cdr-safe (assoc server url-basic-auth-storage)))
+	  byserv (cdr-safe (assoc server
+				  (symbol-value url-basic-auth-storage))))
     (cond
      ((and prompt (not byserv))
       (setq user (read-string (url-auth-user-prompt url realm)
 			      (user-real-login-name))
-	    pass (funcall url-passwd-entry-func "Password: ")
-	    url-basic-auth-storage
-	    (cons (list server
-			(cons path
-			      (setq retval
-				    (base64-encode-string
-				     (format "%s:%s" user pass)))))
-		  url-basic-auth-storage)))
+	    pass (funcall url-passwd-entry-func "Password: "))
+      (set url-basic-auth-storage
+	   (cons (list server
+		       (cons path
+			     (setq retval
+				   (base64-encode-string
+				    (format "%s:%s" user pass)))))
+		 (symbol-value url-basic-auth-storage))))
      (byserv
       (setq retval (cdr-safe (assoc path byserv)))
       (if (and (not retval)
@@ -104,7 +108,7 @@ instead of the pathname inheritance method."
 				    (user-real-login-name))
 		  pass (funcall url-passwd-entry-func "Password: ")
 		  retval (base64-encode-string (format "%s:%s" user pass))
-		  byserv (assoc server url-basic-auth-storage))
+		  byserv (assoc server (symbol-value url-basic-auth-storage)))
 	    (setcdr byserv
 		    (cons (cons path retval) (cdr byserv))))))
      (t (setq retval nil)))

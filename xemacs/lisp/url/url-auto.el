@@ -1,9 +1,7 @@
 
-;;;### (autoloads (url-register-auth-scheme url-get-authentication)
-;;;;;;  "url-auth" "url-auth.el" (15114 37017))
-;;; Generated autoloads from url-auth.el
+;;;### (autoloads (url-register-auth-scheme url-get-authentication) "url-auth" "lisp/url-auth.el")
 
-(autoload (quote url-get-authentication) "url-auth" "\
+(autoload 'url-get-authentication "url-auth" "\
 Return an authorization string suitable for use in the WWW-Authenticate
 header in an HTTP/1.0 request.
 
@@ -23,7 +21,7 @@ TYPE   is the type of authentication to be returned.  This is either a string
 PROMPT is boolean - specifies whether to ask the user for a username/password
        if one cannot be found in the cache" nil nil)
 
-(autoload (quote url-register-auth-scheme) "url-auth" "\
+(autoload 'url-register-auth-scheme "url-auth" "\
 Register an HTTP authentication method.
 
 TYPE     is a string or symbol specifying the name of the method.   This
@@ -37,81 +35,150 @@ RATING   a rating between 1 and 10 of the strength of the authentication.
 
 ;;;***
 
-;;;### (autoloads (url-cache-expired url-cache-extract url-is-cached
-;;;;;;  url-store-in-cache) "url-cache" "url-cache.el" (15105 46208))
-;;; Generated autoloads from url-cache.el
+;;;### (autoloads (url-cache-expired url-cache-extract url-is-cached url-store-in-cache) "url-cache" "lisp/url-cache.el")
 
-(autoload (quote url-store-in-cache) "url-cache" "\
+(autoload 'url-store-in-cache "url-cache" "\
 Store buffer BUFF in the cache." nil nil)
 
-(autoload (quote url-is-cached) "url-cache" "\
+(autoload 'url-is-cached "url-cache" "\
 Return non-nil if the URL is cached." nil nil)
 
-(autoload (quote url-cache-extract) "url-cache" "\
+(autoload 'url-cache-extract "url-cache" "\
 Extract FNAM from the local disk cache" nil nil)
 
-(autoload (quote url-cache-expired) "url-cache" "\
+(autoload 'url-cache-expired "url-cache" "\
 Return t iff a cached file has expired." nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-cid) "url-cid" "url-cid.el" (15092 11246))
-;;; Generated autoloads from url-cid.el
+;;;### (autoloads (url-cid) "url-cid" "lisp/url-cid.el")
 
-(autoload (quote url-cid) "url-cid" nil nil nil)
+(autoload 'url-cid "url-cid" nil nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-cookie-setup-save-timer url-cookie-handle-set-cookie
-;;;;;;  url-cookie-retrieve url-cookie-write-file url-cookie-parse-file)
-;;;;;;  "url-cookie" "url-cookie.el" (15090 47552))
-;;; Generated autoloads from url-cookie.el
+;;;### (autoloads (url-cookie-setup-save-timer url-cookie-handle-set-cookie url-cookie-retrieve url-cookie-write-file url-cookie-parse-file) "url-cookie" "lisp/url-cookie.el")
 
-(autoload (quote url-cookie-parse-file) "url-cookie" nil nil nil)
+(autoload 'url-cookie-parse-file "url-cookie" nil nil nil)
 
-(autoload (quote url-cookie-write-file) "url-cookie" nil nil nil)
+(autoload 'url-cookie-write-file "url-cookie" nil nil nil)
 
-(autoload (quote url-cookie-retrieve) "url-cookie" "\
+(autoload 'url-cookie-retrieve "url-cookie" "\
 Retrieves all the netscape-style cookies for a specified HOST and PATH" nil nil)
 
-(autoload (quote url-cookie-handle-set-cookie) "url-cookie" nil nil nil)
+(autoload 'url-cookie-handle-set-cookie "url-cookie" nil nil nil)
 
-(autoload (quote url-cookie-setup-save-timer) "url-cookie" "\
+(autoload 'url-cookie-setup-save-timer "url-cookie" "\
 Reset the cookie saver timer." t nil)
 
 ;;;***
 
-;;;### (autoloads (url-file) "url-file" "url-file.el" (15114 36962))
-;;; Generated autoloads from url-file.el
+;;;### (autoloads (url-dav-vc-registered url-dav-file-name-completion url-dav-file-name-all-completions url-dav-rename-file url-dav-make-directory url-dav-file-directory-p url-dav-directory-files url-dav-delete-file url-dav-delete-directory url-dav-save-resource url-dav-file-attributes url-dav-unlock-resource url-dav-active-locks url-dav-lock-resource url-dav-get-properties url-dav-supported-p) "url-dav" "lisp/url-dav.el")
 
-(autoload (quote url-file) "url-file" "\
+(autoload 'url-dav-supported-p "url-dav" nil nil nil)
+
+(autoload 'url-dav-get-properties "url-dav" "\
+Return properties for URL, up to DEPTH levels deep.
+
+Returns an assoc list, where the key is the filename (possibly a full
+URI), and the value is a standard property list of DAV property
+names (ie: DAV:resourcetype).
+" nil nil)
+
+(autoload 'url-dav-lock-resource "url-dav" "\
+Request a lock on URL.  If EXCLUSIVE is non-nil, get an exclusive lock.
+Optional 3rd argument DEPTH says how deep the lock should go, default is 0
+\(lock only the resource and none of its children).
+
+Returns a cons-cell of (SUCCESSFUL-RESULTS . FAILURE-RESULTS).
+SUCCESSFUL-RESULTS is a list of (URL STATUS locktoken).
+FAILURE-RESULTS is a list of (URL STATUS).
+" nil nil)
+
+(autoload 'url-dav-active-locks "url-dav" "\
+Return an assoc list of all active locks on URL." nil nil)
+
+(autoload 'url-dav-unlock-resource "url-dav" "\
+Release the lock on URL represented by LOCK-TOKEN.
+Returns `t' iff the lock was successfully released.
+" nil nil)
+
+(autoload 'url-dav-file-attributes "url-dav" nil nil nil)
+
+(autoload 'url-dav-save-resource "url-dav" "\
+Save OBJ as URL using WebDAV.
+URL must be a fully qualified URL.
+OBJ may be a buffer or a string." nil nil)
+
+(autoload 'url-dav-delete-directory "url-dav" "\
+Delete the WebDAV collection URL.
+If optional second argument RECURSIVE is non-nil, then delete all
+files in the collection as well.
+" nil nil)
+
+(autoload 'url-dav-delete-file "url-dav" "\
+Delete file named URL." nil nil)
+
+(autoload 'url-dav-directory-files "url-dav" "\
+Return a list of names of files in DIRECTORY.
+There are three optional arguments:
+If FULL is non-nil, return absolute file names.  Otherwise return names
+ that are relative to the specified directory.
+If MATCH is non-nil, mention only file names that match the regexp MATCH.
+If NOSORT is non-nil, the list is not sorted--its order is unpredictable.
+ NOSORT is useful if you plan to sort the result yourself.
+" nil nil)
+
+(autoload 'url-dav-file-directory-p "url-dav" "\
+Return t if URL names an existing DAV collection." nil nil)
+
+(autoload 'url-dav-make-directory "url-dav" "\
+Create the directory DIR and any nonexistent parent dirs." nil nil)
+
+(autoload 'url-dav-rename-file "url-dav" nil nil nil)
+
+(autoload 'url-dav-file-name-all-completions "url-dav" "\
+Return a list of all completions of file name FILE in directory DIRECTORY.
+These are all file names in directory DIRECTORY which begin with FILE.
+" nil nil)
+
+(autoload 'url-dav-file-name-completion "url-dav" "\
+Complete file name FILE in directory DIRECTORY.
+Returns the longest string
+common to all file names in DIRECTORY that start with FILE.
+If there is only one and FILE matches it exactly, returns t.
+Returns nil if DIR contains no name starting with FILE.
+" nil nil)
+
+(autoload 'url-dav-vc-registered "url-dav" nil nil nil)
+
+;;;***
+
+;;;### (autoloads (url-file) "url-file" "lisp/url-file.el")
+
+(autoload 'url-file "url-file" "\
 Handle file: and ftp: URLs." nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-open-stream url-gateway-nslookup-host) "url-gw"
-;;;;;;  "url-gw.el" (15302 2626))
-;;; Generated autoloads from url-gw.el
+;;;### (autoloads (url-open-stream url-gateway-nslookup-host) "url-gw" "lisp/url-gw.el")
 
-(autoload (quote url-gateway-nslookup-host) "url-gw" "\
+(autoload 'url-gateway-nslookup-host "url-gw" "\
 Attempt to resolve the given HOST using nslookup if possible." t nil)
 
-(autoload (quote url-open-stream) "url-gw" "\
+(autoload 'url-open-stream "url-gw" "\
 Open a stream to HOST, possibly via a gateway.
 Args per `open-network-stream'.
 Will not make a connexion if `url-gateway-unplugged' is non-nil." nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-insert-file-contents url-file-local-copy url-copy-file
-;;;;;;  url-setup-file-name-handlers) "url-handlers" "url-handlers.el"
-;;;;;;  (15302 2986))
-;;; Generated autoloads from url-handlers.el
+;;;### (autoloads (url-insert-file-contents url-file-local-copy url-copy-file url-setup-file-name-handlers) "url-handlers" "lisp/url-handlers.el")
 
-(autoload (quote url-setup-file-name-handlers) "url-handlers" "\
+(autoload 'url-setup-file-name-handlers "url-handlers" "\
 Setup file-name handlers." nil nil)
 
-(autoload (quote url-copy-file) "url-handlers" "\
+(autoload 'url-copy-file "url-handlers" "\
 Copy URL to NEWNAME.  Both args must be strings.
 Signals a `file-already-exists' error if file NEWNAME already exists,
 unless a third argument OK-IF-ALREADY-EXISTS is supplied and non-nil.
@@ -121,27 +188,24 @@ Fourth arg KEEP-TIME non-nil means give the new file the same
 last-modified time as the old one.  (This works on only some systems.)
 A prefix arg makes KEEP-TIME non-nil." nil nil)
 
-(autoload (quote url-file-local-copy) "url-handlers" "\
+(autoload 'url-file-local-copy "url-handlers" "\
 Copy URL into a temporary file on this machine.
 Returns the name of the local copy, or nil, if FILE is directly
 accessible." nil nil)
 
-(autoload (quote url-insert-file-contents) "url-handlers" nil nil nil)
+(autoload 'url-insert-file-contents "url-handlers" nil nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-history-save-history url-history-parse-history
-;;;;;;  url-history-setup-save-timer) "url-history" "url-history.el"
-;;;;;;  (15092 12080))
-;;; Generated autoloads from url-history.el
+;;;### (autoloads (url-history-save-history url-history-parse-history url-history-setup-save-timer) "url-history" "lisp/url-history.el")
 
-(autoload (quote url-history-setup-save-timer) "url-history" "\
+(autoload 'url-history-setup-save-timer "url-history" "\
 Reset the history list timer." t nil)
 
-(autoload (quote url-history-parse-history) "url-history" "\
+(autoload 'url-history-parse-history "url-history" "\
 Parse a history file stored in FNAME." nil nil)
 
-(autoload (quote url-history-save-history) "url-history" "\
+(autoload 'url-history-save-history "url-history" "\
 Write the global history file into `url-history-file'.
 The type of data written is determined by what is in the file to begin
 with.  If the type of storage cannot be determined, then prompt the
@@ -149,134 +213,151 @@ user for what type to save as." t nil)
 
 ;;;***
 
-;;;### (autoloads (url-http-file-attributes url-http-file-exists-p
-;;;;;;  url-http) "url-http" "url-http.el" (15289 64199))
-;;; Generated autoloads from url-http.el
+;;;### (autoloads (url-http-options url-http-file-attributes url-http-file-exists-p url-http) "url-http" "lisp/url-http.el")
 
-(autoload (quote url-http) "url-http" "\
+(autoload 'url-http "url-http" "\
 Retrieve URL via HTTP asynchronously.
 URL must be a parsed URL.  See `url-generic-parse-url' for details.
 When retrieval is completed, the function CALLBACK is executed with
 CBARGS as the arguments." nil nil)
 
-(autoload (quote url-http-file-exists-p) "url-http" nil nil nil)
+(autoload 'url-http-file-exists-p "url-http" nil nil nil)
 
-(defalias (quote url-http-file-readable-p) (quote url-http-file-exists-p))
+(defalias 'url-http-file-readable-p 'url-http-file-exists-p)
 
-(autoload (quote url-http-file-attributes) "url-http" nil nil nil)
+(autoload 'url-http-file-attributes "url-http" nil nil nil)
+
+(autoload 'url-http-options "url-http" "\
+Returns a property list describing options available for URL.
+This list is retrieved using the `OPTIONS' HTTP method.
+
+Property list members:
+
+methods
+  A list of symbols specifying what HTTP methods the resource
+  supports.
+
+dav
+  A list of numbers specifying what DAV protocol/schema versions are
+  supported.
+
+dasl
+  A list of supported DASL search types supported (string form)
+
+ranges
+  A list of the units available for use in partial document fetches.
+
+p3p
+  The `Platform For Privacy Protection' description for the resource.
+  Currently this is just the raw header contents.  This is likely to
+  change once P3P is formally supported by the URL package or
+  Emacs/W3.
+" nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-irc) "url-irc" "url-irc.el" (14435 25453))
-;;; Generated autoloads from url-irc.el
+;;;### (autoloads (url-irc) "url-irc" "lisp/url-irc.el")
 
-(autoload (quote url-irc) "url-irc" nil nil nil)
-
-;;;***
-
-;;;### (autoloads (url-ldap) "url-ldap" "url-ldap.el" (14398 30982))
-;;; Generated autoloads from url-ldap.el
-
-(autoload (quote url-ldap) "url-ldap" nil nil nil)
+(autoload 'url-irc "url-irc" nil nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-mailto url-mail) "url-mailto" "url-mailto.el"
-;;;;;;  (15293 59398))
-;;; Generated autoloads from url-mailto.el
+;;;### (autoloads (url-ldap) "url-ldap" "lisp/url-ldap.el")
 
-(autoload (quote url-mail) "url-mailto" nil t nil)
+(autoload 'url-ldap "url-ldap" nil nil nil)
 
-(autoload (quote url-mailto) "url-mailto" "\
+;;;***
+
+;;;### (autoloads (url-mailto url-mail) "url-mailto" "lisp/url-mailto.el")
+
+(autoload 'url-mail "url-mailto" nil t nil)
+
+(autoload 'url-mailto "url-mailto" "\
 Handle the mailto: URL syntax." nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-data url-generic-emulator-loader url-info
-;;;;;;  url-man) "url-misc" "url-misc.el" (15105 46591))
-;;; Generated autoloads from url-misc.el
+;;;### (autoloads (url-data url-generic-emulator-loader url-info url-man) "url-misc" "lisp/url-misc.el")
 
-(autoload (quote url-man) "url-misc" nil nil nil)
+(autoload 'url-man "url-misc" "\
+Fetch a Unix manual page URL." nil nil)
 
-(autoload (quote url-info) "url-misc" nil nil nil)
+(autoload 'url-info "url-misc" "\
+Fetch a GNU Info URL." nil nil)
 
-(autoload (quote url-generic-emulator-loader) "url-misc" nil nil nil)
+(autoload 'url-generic-emulator-loader "url-misc" nil nil nil)
 
-(defalias (quote url-rlogin) (quote url-generic-emulator-loader))
+(defalias 'url-rlogin 'url-generic-emulator-loader)
 
-(defalias (quote url-telnet) (quote url-generic-emulator-loader))
+(defalias 'url-telnet 'url-generic-emulator-loader)
 
-(defalias (quote url-tn3270) (quote url-generic-emulator-loader))
+(defalias 'url-tn3270 'url-generic-emulator-loader)
 
-(autoload (quote url-data) "url-misc" nil nil nil)
-
-;;;***
-
-;;;### (autoloads (url-snews url-news) "url-news" "url-news.el" (15114
-;;;;;;  36876))
-;;; Generated autoloads from url-news.el
-
-(autoload (quote url-news) "url-news" nil nil nil)
-
-(autoload (quote url-snews) "url-news" nil nil nil)
+(autoload 'url-data "url-misc" "\
+Fetch a data URL (RFC 2397)." nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-ns-user-pref url-ns-prefs isInNet isResolvable
-;;;;;;  dnsResolve dnsDomainIs isPlainHostName) "url-ns" "url-ns.el"
-;;;;;;  (14913 8114))
-;;; Generated autoloads from url-ns.el
+;;;### (autoloads (url-snews url-news) "url-news" "lisp/url-news.el")
 
-(autoload (quote isPlainHostName) "url-ns" nil nil nil)
+(autoload 'url-news "url-news" nil nil nil)
 
-(autoload (quote dnsDomainIs) "url-ns" nil nil nil)
-
-(autoload (quote dnsResolve) "url-ns" nil nil nil)
-
-(autoload (quote isResolvable) "url-ns" nil nil nil)
-
-(autoload (quote isInNet) "url-ns" nil nil nil)
-
-(autoload (quote url-ns-prefs) "url-ns" nil nil nil)
-
-(autoload (quote url-ns-user-pref) "url-ns" nil nil nil)
+(autoload 'url-snews "url-news" nil nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-generic-parse-url url-recreate-url) "url-parse"
-;;;;;;  "url-parse.el" (15288 22758))
-;;; Generated autoloads from url-parse.el
+;;;### (autoloads (url-ns-user-pref url-ns-prefs isInNet isResolvable dnsResolve dnsDomainIs isPlainHostName) "url-ns" "lisp/url-ns.el")
 
-(autoload (quote url-recreate-url) "url-parse" nil nil nil)
+(autoload 'isPlainHostName "url-ns" nil nil nil)
 
-(autoload (quote url-generic-parse-url) "url-parse" "\
+(autoload 'dnsDomainIs "url-ns" nil nil nil)
+
+(autoload 'dnsResolve "url-ns" nil nil nil)
+
+(autoload 'isResolvable "url-ns" nil nil nil)
+
+(autoload 'isInNet "url-ns" nil nil nil)
+
+(autoload 'url-ns-prefs "url-ns" nil nil nil)
+
+(autoload 'url-ns-user-pref "url-ns" nil nil nil)
+
+;;;***
+
+;;;### (autoloads (url-generic-parse-url url-recreate-url) "url-parse" "lisp/url-parse.el")
+
+(autoload 'url-recreate-url "url-parse" nil nil nil)
+
+(autoload 'url-generic-parse-url "url-parse" "\
 Return a vector of the parts of URL.
 Format is:
 [proto username password hostname portnumber file reference attributes fullp]" nil nil)
 
 ;;;***
 
-;;;### (autoloads (url-setup-privacy-info) "url-privacy" "url-privacy.el"
-;;;;;;  (15293 59778))
-;;; Generated autoloads from url-privacy.el
+;;;### (autoloads (url-setup-privacy-info) "url-privacy" "lisp/url-privacy.el")
 
-(autoload (quote url-setup-privacy-info) "url-privacy" nil t nil)
+(autoload 'url-setup-privacy-info "url-privacy" nil t nil)
 
 ;;;***
 
-;;;### (autoloads (url-view-url url-truncate-url-for-viewing url-file-extension
-;;;;;;  url-hexify-string url-unhex-string url-parse-query-string
-;;;;;;  url-basepath url-percentage url-display-percentage url-pretty-length
-;;;;;;  url-strip-leading-spaces url-eat-trailing-space url-get-normalized-date
-;;;;;;  url-lazy-message url-normalize-url url-insert-entities-in-string
-;;;;;;  url-parse-args) "url-util" "url-util.el" (15288 22441))
-;;; Generated autoloads from url-util.el
+;;;### (autoloads (url-view-url url-truncate-url-for-viewing url-file-extension url-hexify-string url-unhex-string url-parse-query-string url-basepath url-percentage url-display-percentage url-pretty-length url-strip-leading-spaces url-eat-trailing-space url-get-normalized-date url-lazy-message url-normalize-url url-insert-entities-in-string url-parse-args url-debug url-debug) "url-util" "lisp/url-util.el")
 
-(autoload (quote url-parse-args) "url-util" nil nil nil)
+(defvar url-debug nil "\
+*What types of debug messages from the URL library to show.
+Debug messages are logged to the *URL-DEBUG* buffer.
 
-(autoload (quote url-insert-entities-in-string) "url-util" "\
+If t, all messages will be logged.
+If a number, all messages will be logged, as well shown via `message'.
+If a list, it is a list of the types of messages to be logged.")
+
+(autoload 'url-debug "url-util" nil nil nil)
+
+(autoload 'url-parse-args "url-util" nil nil nil)
+
+(autoload 'url-insert-entities-in-string "url-util" "\
 Convert HTML markup-start characters to entity references in STRING.
-  Also replaces the \" character, so that the result may be safely used as
+Also replaces the \" character, so that the result may be safely used as
   an attribute value in a tag.  Returns a new string with the result of the
   conversion.  Replaces these characters as follows:
     &  ==>  &amp;
@@ -284,62 +365,61 @@ Convert HTML markup-start characters to entity references in STRING.
     >  ==>  &gt;
     \"  ==>  &quot;" nil nil)
 
-(autoload (quote url-normalize-url) "url-util" "\
-Return a 'normalized' version of URL.  This strips out default port
-numbers, etc." nil nil)
+(autoload 'url-normalize-url "url-util" "\
+Return a 'normalized' version of URL.
+Strips out default port numbers, etc." nil nil)
 
-(autoload (quote url-lazy-message) "url-util" "\
+(autoload 'url-lazy-message "url-util" "\
 Just like `message', but is a no-op if called more than once a second.
 Will not do anything if url-show-status is nil." nil nil)
 
-(autoload (quote url-get-normalized-date) "url-util" "\
+(autoload 'url-get-normalized-date "url-util" "\
 Return a 'real' date string that most HTTP servers can understand." nil nil)
 
-(autoload (quote url-eat-trailing-space) "url-util" "\
+(autoload 'url-eat-trailing-space "url-util" "\
 Remove spaces/tabs at the end of a string." nil nil)
 
-(autoload (quote url-strip-leading-spaces) "url-util" "\
+(autoload 'url-strip-leading-spaces "url-util" "\
 Remove spaces at the front of a string." nil nil)
 
-(autoload (quote url-pretty-length) "url-util" nil nil nil)
+(autoload 'url-pretty-length "url-util" nil nil nil)
 
-(autoload (quote url-display-percentage) "url-util" nil nil nil)
+(autoload 'url-display-percentage "url-util" nil nil nil)
 
-(autoload (quote url-percentage) "url-util" nil nil nil)
+(autoload 'url-percentage "url-util" nil nil nil)
 
-(autoload (quote url-basepath) "url-util" "\
-Return the base pathname of FILE, or the actual filename if X is true" nil nil)
+(autoload 'url-basepath "url-util" "\
+Return the base pathname of FILE, or the actual filename if X is true." nil nil)
 
-(autoload (quote url-parse-query-string) "url-util" nil nil nil)
+(autoload 'url-parse-query-string "url-util" nil nil nil)
 
-(autoload (quote url-unhex-string) "url-util" "\
+(autoload 'url-unhex-string "url-util" "\
 Remove %XXX embedded spaces, etc in a url.
 If optional second argument ALLOW-NEWLINES is non-nil, then allow the
 decoding of carriage returns and line feeds in the string, which is normally
 forbidden in URL encoding." nil nil)
 
-(autoload (quote url-hexify-string) "url-util" "\
-Escape characters in a string" nil nil)
+(autoload 'url-hexify-string "url-util" "\
+Escape characters in a string." nil nil)
 
-(autoload (quote url-file-extension) "url-util" "\
-Return the filename extension of FNAME.  If optional variable X is t,
+(autoload 'url-file-extension "url-util" "\
+Return the filename extension of FNAME.
+If optional variable X is t,
 then return the basename of the file with the extension stripped off." nil nil)
 
-(autoload (quote url-truncate-url-for-viewing) "url-util" "\
+(autoload 'url-truncate-url-for-viewing "url-util" "\
 Return a shortened version of URL that is WIDTH characters or less wide.
 WIDTH defaults to the current frame width." nil nil)
 
-(autoload (quote url-view-url) "url-util" "\
-View the current document's URL.  Optional argument NO-SHOW means
-just return the URL, don't show it in the minibuffer." t nil)
+(autoload 'url-view-url "url-util" "\
+View the current document's URL.
+Optional argument NO-SHOW means just return the URL, don't show it in
+the minibuffer.
+
+This uses `url-current-object', set locally to the buffer." t nil)
 
 ;;;***
-
-;;;### (autoloads nil "url" "url.el" (15132 64989))
-;;; Generated autoloads from url.el
 
 (defvar url-configuration-directory "~/.url")
-
-;;;***
 
 (provide 'url-auto)

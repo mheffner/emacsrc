@@ -1,7 +1,7 @@
 ;;; url-vars.el --- Variables for Uniform Resource Locator tool
 ;; Author: $Author: fx $
-;; Created: $Date: 2001/10/11 21:07:53 $
-;; Version: $Revision: 1.10 $
+;; Created: $Date: 2002/04/22 09:25:02 $
+;; Version: $Revision: 1.14 $
 ;; Keywords: comm, data, processes, hypermedia
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -190,9 +190,9 @@ buffer, and it should use `mail-header-separator' if possible."
   :group 'url)
 
 (defcustom url-proxy-services nil
-  "*An assoc list of access types and servers that gateway them.
+  "*An alist of schemes and proxy servers that gateway them.
 Looks like ((\"http\" . \"hostname:portnumber\") ...).  This is set up
-from the ACCESS_proxy environment variables in `url-do-setup'."
+from the ACCESS_proxy environment variables."
   :type '(repeat (cons :format "%v"
 		       (string :tag "Protocol")
 		       (string :tag "Proxy")))
@@ -251,7 +251,7 @@ Should be an assoc list of headers/contents.")
 ;; cars aren't valid MIME charsets/coding systems, at least in Emacs.
 ;; This gets it correct by construction in Emacs.  Fixme: DTRT for
 ;; XEmacs -- its `coding-system-list' doesn't have the BASE-ONLY arg.
-(when (and (featurep 'xemacs)
+(when (and (not (featurep 'xemacs))
 	   (fboundp 'coding-system-list))
   (setq mm-mime-mule-charset-alist
 	(apply
@@ -269,7 +269,9 @@ Should be an assoc list of headers/contents.")
 ;; the list should be trimmed significantly.
 ;; Fixme: do something sane if we don't have `sort-coding-systems'
 ;; (Emacs 20, XEmacs).
-(defvar url-mime-charset-string
+(defun url-mime-charset-string ()
+  "Generate a list of preferred MIME charsets for HTTP requests.
+Generated according to current coding system priorities."
   (if (fboundp 'sort-coding-systems)
       (let ((ordered (sort-coding-systems
 		      (let (accum)
@@ -279,13 +281,28 @@ Should be an assoc list of headers/contents.")
 			(nreverse accum)))))
 	(concat (format "%s;q=1, " (pop ordered))
 		(mapconcat 'symbol-name ordered ";q=0.5, ")
-		";q=0.5")))
+		";q=0.5"))))
+
+(defvar url-mime-charset-string (url-mime-charset-string)
   "*String to send in the Accept-charset: field in HTTP requests.
 The MIME charset corresponding to the most preferred coding system is
 given priority 1 and the rest are given priority 0.5.")
 
+(defun url-set-mime-charset-string ()
+  (setq url-mime-charset-string (url-mime-charset-string)))
+;; Regenerate if the language environment changes.
+(add-hook 'set-language-environment-hook 'url-set-mime-charset-string)
+
+;; Fixme: set from the locale.
 (defcustom url-mime-language-string nil
-  "*String to send in the Accept-language: field in HTTP requests."
+  "*String to send in the Accept-language: field in HTTP requests.
+
+Specifies the preferred language when servers can serve documents in
+several languages.  Use RFC 1766 abbreviations, e.g.@: `en' for
+English, `de' for German.  A comma-separated specifies descending
+order of preference.  The ordering can be made explicit using `q'
+factors defined by HTTP, e.g. `de,en-gb;q=0.8,en;q=0.7'.  `*' means
+get the first available language (as opposed to the default)."
   :type '(radio
 	  (const :tag "None (get default language version)" :value nil)
 	  (const :tag "Any (get first available language version)" :value "*")
@@ -296,9 +313,6 @@ given priority 1 and the rest are given priority 0.5.")
 (defvar url-mime-accept-string nil
   "String to send to the server in the Accept: field in HTTP requests.")
 
-(defvar url-proxy-basic-authentication nil
-  "Internal structure - do not modify!")
-  
 (defvar url-package-version nil
   "Version number of package using URL.")
 
@@ -340,14 +354,14 @@ undefined."
   :group 'url)
 
 (defvar url-nonrelative-link
-  "^\\([-a-zA-Z0-9+.]+:\\)"
+  "\\`\\([-a-zA-Z0-9+.]+:\\)"
   "A regular expression that will match an absolute URL.")
 
 (defcustom url-confirmation-func 'y-or-n-p
   "*What function to use for asking yes or no functions.
-Possible values are 'yes-or-no-p or 'y-or-n-p, or any function that
+Possible values are `yes-or-no-p' or `y-or-n-p', or any function that
 takes a single argument (the prompt), and returns t only if a positive
-answer is gotten."
+answer is given."
   :type '(choice (const :tag "Short (y or n)" :value y-or-n-p)
 		 (const :tag "Long (yes or no)" :value yes-or-no-p)
 		 (function :tag "Other"))
@@ -355,23 +369,18 @@ answer is gotten."
 
 (defcustom url-gateway-method 'native
   "*The type of gateway support to use.
-Should be a symbol specifying how we are to get a connection off of
-the local machine.
+Should be a symbol specifying how to get a connection from the local machine.
 
 Currently supported methods:
-'telnet   	:: Run telnet in a subprocess to connect
-'rlogin         :: Rlogin to another machine to connect
-'socks          :: Connects through a socks server
-'ssl            :: Connection should be made with SSL
-'tcp            :: Use the excellent tcp.el package from gnus.
-                   This simply does a (require 'tcp), then sets
-                   `url-gateway-method' to be 'native.
-'native		:: Use the native `open-network-stream' in Emacs"
+`telnet': Run telnet in a subprocess to connect;
+`rlogin': Rlogin to another machine to connect;
+`socks': Connect through a socks server;
+`ssl': Connect with SSL;
+`native': Connect directy."
   :type '(radio (const :tag "Telnet to gateway host" :value telnet)
 		(const :tag "Rlogin to gateway host" :value rlogin)
 		(const :tag "Use SOCKS proxy" :value socks)
 		(const :tag "Use SSL for all connections" :value ssl)
-		(const :tag "Use the `tcp' package" :value tcp)
 		(const :tag "Direct connection" :value native))
   :group 'url-hairy)
 
@@ -417,6 +426,9 @@ Currently supported methods:
   "Non-nil means don't open new network connexions.
 This should be set, e.g. by mail user agents rendering HTML to avoid
 `bugs' which call home.")
+
+(defun url-vars-unload-hook ()
+  (remove-hook 'set-language-environment-hook 'url-set-mime-charset-string))
 
 (provide 'url-vars)
 
