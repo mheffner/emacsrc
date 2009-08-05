@@ -1,3 +1,0 @@
-[submodule "xemacs/lisp/rhtml"]
-	path = xemacs/lisp/rhtml
-	url = git://github.com/eschulte/rhtml.git
