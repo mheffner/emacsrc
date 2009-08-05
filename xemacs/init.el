@@ -264,7 +264,8 @@
 (add-hook 'ruby-mode-hook
           '(lambda ()
              (inf-ruby-keys)
-	     (if (string-match "/app/" buffer-file-name)
+	     (if (or (string-match "/app/" buffer-file-name)
+		     (string-match "/db/migrate/" buffer-file-name))
 		 (rails-load-config))
 	     ))
 
